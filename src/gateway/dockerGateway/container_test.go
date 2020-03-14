@@ -73,7 +73,7 @@ func TestGateway_ContainerGetAll(t *testing.T) {
 	assert.NotEmptyf(t, containers, "Should return at least one container")
 
 	for i, container := range containers {
-		assert.Equal(t, string(container.Id), mockContainers[i].ID,
+		assert.Equal(t, string(container.ID), mockContainers[i].ID,
 			"Container IDs match")
 		assert.Equal(t, container.Created, time.Unix(mockContainers[i].Created, 0),
 			"Container creation times match")
@@ -98,7 +98,7 @@ func TestGateway_ContainerGet(t *testing.T) {
 	assert.Nilf(t, err, "ContainerGet returns no error")
 	assert.NotNilf(t, container, "Should return a container")
 
-	assert.Equal(t, string(container.Id), mockContainer.ID)
+	assert.Equal(t, string(container.ID), mockContainer.ID)
 	assert.Equal(t, container.Created, time.Unix(mockContainer.Created, 0),
 		"Container creation times match")
 	assert.Equal(t, container.Name, strings.TrimLeft(mockContainer.Names[0], "/"),

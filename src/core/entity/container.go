@@ -7,7 +7,7 @@ import (
 type ContainerID string
 
 type Container struct {
-	Id         ContainerID
+	ID         ContainerID
 	Cmd        []string
 	Entrypoint []string
 	Created    time.Time

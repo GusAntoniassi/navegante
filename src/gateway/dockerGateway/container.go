@@ -20,7 +20,7 @@ func hydrateFromTypeContainer(c types.Container) *entity.Container {
 	ec.Entrypoint = []string{commandSplit[0]} // Cast the first position to an array
 	ec.Cmd = commandSplit[1:]                 // Get everything but the first position
 	ec.Created = time.Unix(c.Created, 0)
-	ec.Id = entity.ContainerID(c.ID)
+	ec.ID = entity.ContainerID(c.ID)
 	ec.Name = strings.TrimLeft(c.Names[0], "/") // Names come prefixed with their parent, and "/" is the local Docker Daemon
 
 	return &ec
@@ -35,7 +35,7 @@ func (g *Gateway) ContainerGetAll() ([]*entity.Container, error) {
 		return nil, err
 	}
 
-	var ecs []*entity.Container
+	ecs := make([]*entity.Container, 0, len(containers))
 
 	for _, c := range containers {
 		ec := hydrateFromTypeContainer(c)
@@ -48,19 +48,19 @@ func (g *Gateway) ContainerGetAll() ([]*entity.Container, error) {
 func (g *Gateway) ContainerGet(cid entity.ContainerID) (*entity.Container, error) {
 	ctx := context.Background()
 
-	filters := filters.NewArgs()
-	filters.Add("id", string(cid))
+	f := filters.NewArgs()
+	f.Add("id", string(cid))
 
 	containers, err := g.Docker.ContainerList(ctx, types.ContainerListOptions{
 		Limit:   1,
-		Filters: filters,
+		Filters: f,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	if len(containers) <= 0 {
+	if len(containers) == 0 {
 		return nil, nil
 	}
 
