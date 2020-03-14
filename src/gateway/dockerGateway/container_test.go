@@ -81,3 +81,41 @@ func TestGateway_ContainerGetAll(t *testing.T) {
 			"Container names match")
 	}
 }
+
+func TestGateway_ContainerGet(t *testing.T) {
+	mockContainer := getMockContainers()[0]
+
+	mc := minimock.NewController(t)
+
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(ctx context.Context, options types.ContainerListOptions) (ca1 []types.Container, err error) {
+		return []types.Container{mockContainer}, nil
+	})
+
+	gw := NewGateway(dockerMock)
+
+	container, err := gw.ContainerGet(entity.ContainerID("0123abcd456e"))
+
+	assert.Nilf(t, err, "ContainerGet returns no error")
+	assert.NotNilf(t, container, "Should return a container")
+
+	assert.Equal(t, string(container.Id), mockContainer.ID)
+	assert.Equal(t, container.Created, time.Unix(mockContainer.Created, 0),
+		"Container creation times match")
+	assert.Equal(t, container.Name, strings.TrimLeft(mockContainer.Names[0], "/"),
+		"Container names match")
+}
+
+func TestGateway_ContainerGetWithEmptyContainers(t *testing.T) {
+	mc := minimock.NewController(t)
+
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(ctx context.Context, options types.ContainerListOptions) (ca1 []types.Container, err error) {
+		return []types.Container{}, nil
+	})
+
+	gw := NewGateway(dockerMock)
+
+	container, err := gw.ContainerGet(entity.ContainerID("abcd"))
+
+	assert.Nilf(t, err, "Should not return errors")
+	assert.Nilf(t, container, "Should return nil if no containers were found")
+}

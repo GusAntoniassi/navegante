@@ -46,7 +46,25 @@ func (g *Gateway) ContainerGetAll() ([]*entity.Container, error) {
 }
 
 func (g *Gateway) ContainerGet(cid entity.ContainerID) (*entity.Container, error) {
-	return nil, nil
+	ctx := context.Background()
+
+	filters := filters.NewArgs()
+	filters.Add("id", string(cid))
+
+	containers, err := g.Docker.ContainerList(ctx, types.ContainerListOptions{
+		Limit:   1,
+		Filters: filters,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(containers) <= 0 {
+		return nil, nil
+	}
+
+	return hydrateFromTypeContainer(containers[0]), nil
 }
 
 func (g *Gateway) ContainerRun(c *entity.Container) error {
