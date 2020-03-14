@@ -7,7 +7,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
-	"github.com/gusantoniassi/shipmate/core/entity"
+	"github.com/gusantoniassi/navegante/core/entity"
 )
 
 func hydrateFromTypeContainer(c types.Container) *entity.Container {

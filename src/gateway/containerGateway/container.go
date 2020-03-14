@@ -1,6 +1,6 @@
 package containerGateway
 
-import "github.com/gusantoniassi/shipmate/core/entity"
+import "github.com/gusantoniassi/navegante/core/entity"
 
 type Container interface {
 	ContainerGetAll() ([]*entity.Container, error)

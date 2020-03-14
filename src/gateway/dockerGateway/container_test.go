@@ -8,7 +8,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/gojuno/minimock/v3"
-	"github.com/gusantoniassi/shipmate/core/entity"
+	"github.com/gusantoniassi/navegante/core/entity"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -1,8 +1,8 @@
 package container
 
 import (
-	"github.com/gusantoniassi/shipmate/core/entity"
-	"github.com/gusantoniassi/shipmate/gateway/containerGateway"
+	"github.com/gusantoniassi/navegante/core/entity"
+	"github.com/gusantoniassi/navegante/gateway/containerGateway"
 )
 
 type UseCase interface {

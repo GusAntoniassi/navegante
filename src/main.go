@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/client"
-	"github.com/gusantoniassi/shipmate/gateway/dockerGateway"
+	"github.com/gusantoniassi/navegante/gateway/dockerGateway"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/gusantoniassi/shipmate
+module github.com/gusantoniassi/navegante
 
 go 1.14
 
