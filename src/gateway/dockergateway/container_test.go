@@ -1,4 +1,4 @@
-package dockerGateway
+package dockergateway
 
 import (
 	"context"

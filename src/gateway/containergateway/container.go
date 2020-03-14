@@ -1,4 +1,4 @@
-package containerGateway
+package containergateway
 
 import "github.com/gusantoniassi/navegante/core/entity"
 

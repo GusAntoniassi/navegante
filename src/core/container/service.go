@@ -2,7 +2,7 @@ package container
 
 import (
 	"github.com/gusantoniassi/navegante/core/entity"
-	"github.com/gusantoniassi/navegante/gateway/containerGateway"
+	"github.com/gusantoniassi/navegante/gateway/containergateway"
 )
 
 type UseCase interface {
@@ -17,10 +17,10 @@ type UseCase interface {
 }
 
 type Service struct {
-	containerGw *containerGateway.Gateway
+	containerGw *containergateway.Gateway
 }
 
-func NewService(cGw *containerGateway.Gateway) *Service {
+func NewService(cGw *containergateway.Gateway) *Service {
 	return &Service{
 		containerGw: cGw,
 	}

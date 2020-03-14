@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/client"
-	"github.com/gusantoniassi/navegante/gateway/dockerGateway"
+	"github.com/gusantoniassi/navegante/gateway/dockergateway"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	cGw := dockerGateway.NewGateway(client)
+	cGw := dockergateway.NewGateway(client)
 	containers, err := cGw.ContainerGetAll()
 
 	if err != nil {
