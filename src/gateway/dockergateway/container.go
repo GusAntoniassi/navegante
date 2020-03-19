@@ -58,6 +58,7 @@ func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	ec.Name = strings.TrimLeft(c.Names[0], "/") // Names come prefixed with their parent, and "/" is the local Docker Daemon
 	ec.Image = hydrateImageFromTypeContainer(c)
 	ec.Ports = hydratePortsFromTypePort(c.Ports)
+	ec.Labels = c.Labels
 
 	return &ec
 }

@@ -22,4 +22,5 @@ type Container struct {
 
 	Image    *Image
 	Ports    *[]PortMapping
+	Labels   map[string]string
 }
