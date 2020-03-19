@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gusantoniassi/navegante/gateway/containergateway"
 
 	"github.com/docker/docker/client"
 	"github.com/gusantoniassi/navegante/gateway/dockergateway"
@@ -18,7 +19,9 @@ func main() {
 		panic(err)
 	}
 
-	cGw := dockergateway.NewGateway(c)
+	var cGw containergateway.Container
+
+	cGw = dockergateway.NewGateway(c)
 	containers, err := cGw.ContainerGetAll()
 
 	if err != nil {

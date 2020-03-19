@@ -144,8 +144,8 @@ func (g *Gateway) ContainerGet(cid entity.ContainerID) (*entity.Container, error
 	return hydrateFromTypeContainer(&containers[0]), nil
 }
 
-func (g *Gateway) ContainerRun(i *entity.Image) (*entity.Container, error) {
-	return nil, fmt.Errorf("not implemented yet")
+func (g *Gateway) ContainerRun(c *entity.Container) error {
+	return fmt.Errorf("not implemented yet")
 }
 
 func (g *Gateway) ContainerStart(c *entity.Container) error {
