@@ -61,6 +61,23 @@ func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) *[]entity.
 	return &volumes
 }
 
+func hydrateNetworkFromTypeNetworkSettings(ns types.SummaryNetworkSettings) *[]entity.Network {
+	networks := make([]entity.Network, 0, len(ns.Networks))
+
+	for k, n := range ns.Networks {
+		networks = append(networks, entity.Network{
+			ID:        n.NetworkID,
+			Name:      k,
+			Gateway:   n.Gateway,
+			IPAddress: n.IPAddress,
+			Links:     n.Links,
+			Aliases:   n.Aliases,
+		})
+	}
+
+	return &networks
+}
+
 func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	var ec entity.Container
 
@@ -77,6 +94,7 @@ func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	ec.Ports = hydratePortsFromTypePort(c.Ports)
 	ec.Labels = c.Labels
 	ec.Volumes = hydrateVolumesFromTypeMountPoint(c.Mounts)
+	ec.Networks = hydrateNetworkFromTypeNetworkSettings(*c.NetworkSettings)
 
 	return &ec
 }

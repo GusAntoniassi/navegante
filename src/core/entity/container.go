@@ -24,4 +24,5 @@ type Container struct {
 	Ports    *[]PortMapping
 	Labels   map[string]string
 	Volumes  *[]Volume
+	Networks *[]Network
 }
