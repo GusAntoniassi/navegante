@@ -44,6 +44,23 @@ func hydratePortsFromTypePort(p []types.Port) *[]entity.PortMapping {
 	return &ports
 }
 
+func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) *[]entity.Volume {
+	volumes := make([]entity.Volume, 0, len(mountPoints))
+
+	for _, m := range mountPoints {
+		volumes = append(volumes, entity.Volume{
+			Name:          m.Name,
+			Type:          string(m.Type),
+			HostPath:      m.Source,
+			ContainerPath: m.Destination,
+			Mode:          m.Mode,
+			ReadWrite:     m.RW,
+		})
+	}
+
+	return &volumes
+}
+
 func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	var ec entity.Container
 
@@ -59,6 +76,7 @@ func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	ec.Image = hydrateImageFromTypeContainer(c)
 	ec.Ports = hydratePortsFromTypePort(c.Ports)
 	ec.Labels = c.Labels
+	ec.Volumes = hydrateVolumesFromTypeMountPoint(c.Mounts)
 
 	return &ec
 }
