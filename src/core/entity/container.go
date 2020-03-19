@@ -6,6 +6,13 @@ import (
 
 type ContainerID string
 
+type PortMapping struct {
+	IP            string
+	ContainerPort uint16
+	HostPort      uint16
+	Protocol      string
+}
+
 type Container struct {
 	ID         ContainerID
 	Cmd        []string
@@ -14,4 +21,5 @@ type Container struct {
 	Name       string
 
 	Image    *Image
+	Ports    *[]PortMapping
 }

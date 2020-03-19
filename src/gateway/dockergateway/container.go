@@ -29,6 +29,21 @@ func hydrateImageFromTypeContainer(c *types.Container) *entity.Image {
 	}
 }
 
+func hydratePortsFromTypePort(p []types.Port) *[]entity.PortMapping {
+	ports := make([]entity.PortMapping, 0, len(p))
+
+	for _, port := range p {
+		ports = append(ports, entity.PortMapping{
+			IP:            port.IP,
+			ContainerPort: port.PrivatePort,
+			HostPort:      port.PublicPort,
+			Protocol:      port.Type,
+		})
+	}
+
+	return &ports
+}
+
 func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	var ec entity.Container
 
@@ -42,6 +57,7 @@ func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	ec.ID = entity.ContainerID(c.ID)
 	ec.Name = strings.TrimLeft(c.Names[0], "/") // Names come prefixed with their parent, and "/" is the local Docker Daemon
 	ec.Image = hydrateImageFromTypeContainer(c)
+	ec.Ports = hydratePortsFromTypePort(c.Ports)
 
 	return &ec
 }
