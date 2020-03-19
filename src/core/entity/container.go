@@ -12,4 +12,6 @@ type Container struct {
 	Entrypoint []string
 	Created    time.Time
 	Name       string
+
+	Image    *Image
 }
