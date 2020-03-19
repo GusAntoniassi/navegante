@@ -19,6 +19,8 @@ type Container struct {
 	Entrypoint []string
 	Created    time.Time
 	Name       string
+	State      string
+	Status     string
 
 	Image    *Image
 	Ports    *[]PortMapping
