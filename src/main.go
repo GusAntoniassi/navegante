@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/docker/docker/client"
@@ -11,20 +12,19 @@ func main() {
 	// Example Docker client implementation
 	// @TODO: remove this
 
-	client, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	c, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
 	if err != nil {
 		panic(err)
 	}
 
-	cGw := dockergateway.NewGateway(client)
+	cGw := dockergateway.NewGateway(c)
 	containers, err := cGw.ContainerGetAll()
 
 	if err != nil {
 		panic(err)
 	}
 
-	for _, container := range containers {
-		fmt.Printf("%+v", container)
-	}
+	data, _ := json.Marshal(containers)
+	fmt.Printf("%s\n", data)
 }
