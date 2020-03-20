@@ -2,6 +2,7 @@ package dockergateway
 
 import (
 	"context"
+	networktypes "github.com/docker/docker/api/types/network"
 	"strings"
 	"testing"
 	"time"
@@ -15,28 +16,66 @@ import (
 func getMockContainers() []types.Container {
 	return []types.Container{
 		{
-			ID:         "0123abcd456e",
-			Names:      []string{"/smart_einstein"},
-			Image:      "registry.foo.bar/foo:latest",
-			ImageID:    "sha256:abcde123456",
-			Command:    "/bin/bash echo foo",
-			Created:    1583610097,
-			Ports:      []types.Port{},
+			ID:      "0123abcd456e",
+			Names:   []string{"/smart_einstein"},
+			Image:   "registry.foo.bar/foo:latest",
+			ImageID: "sha256:abcde123456",
+			Command: "/bin/bash echo foo",
+			Created: 1583610097,
+			Ports: []types.Port{
+				{
+					IP:          "0.0.0.0",
+					PrivatePort: 80,
+					PublicPort:  8080,
+					Type:        "tcp",
+				},
+			},
 			SizeRw:     0,
 			SizeRootFs: 0,
-			Labels:     nil,
-			State:      "running",
-			Status:     "Up 4 hours",
+			Labels: map[string]string{
+				"foo": "bar",
+			},
+			State:  "running",
+			Status: "Up 4 hours",
 			HostConfig: struct {
 				NetworkMode string `json:",omitempty"`
 			}{},
-			NetworkSettings: nil,
-			Mounts:          nil,
+			NetworkSettings: &types.SummaryNetworkSettings{
+				Networks: map[string]*networktypes.EndpointSettings{
+					"bridge": {
+						NetworkID: "abcd123456",
+						Gateway:   "172.17.0.1",
+						IPAddress: "172.17.0.2",
+					},
+				},
+			},
+			Mounts: []types.MountPoint{
+				{
+					Type:        "bind",
+					Name:        "",
+					Source:      "/foo/bar",
+					Destination: "/container/bar",
+					Driver:      "",
+					Mode:        "rw",
+					RW:          true,
+					Propagation: "rprivate",
+				},
+				{
+					Type:        "volume",
+					Name:        "log",
+					Source:      "/var/lib/docker/volumes/foo-log/_data",
+					Destination: "/var/log",
+					Driver:      "local",
+					Mode:        "rw",
+					RW:          true,
+					Propagation: "",
+				},
+			},
 		},
 		{
 			ID:      "0321dcba654e",
 			Names:   []string{"/silly_bach"},
-			Image:   "registry.foo.bar/bar:latest",
+			Image:   "registry.foo.bar/bar:1.0.2",
 			ImageID: "sha256:abcde123123",
 			Command: "/bin/bash echo bar",
 			Created: 1583610006,
@@ -93,7 +132,7 @@ func TestGateway_ContainerGet(t *testing.T) {
 
 	gw := NewGateway(dockerMock)
 
-	container, err := gw.ContainerGet(entity.ContainerID("0123abcd456e"))
+	container, err := gw.ContainerGet(entity.ContainerID(mockContainer.ID))
 
 	assert.Nilf(t, err, "ContainerGet returns no error")
 	assert.NotNilf(t, container, "Should return a container")
@@ -103,6 +142,75 @@ func TestGateway_ContainerGet(t *testing.T) {
 		"Container creation times match")
 	assert.Equal(t, container.Name, strings.TrimLeft(mockContainer.Names[0], "/"),
 		"Container names match")
+}
+
+func TestGateway_hydrateNetworkFromTypeNetworkSettings(t *testing.T) {
+	networkSettings := getMockContainers()[0].NetworkSettings
+
+	networks := hydrateNetworkFromTypeNetworkSettings(*networkSettings)
+
+	i := 0
+	for _, nw := range networkSettings.Networks {
+		assert.Equal(t, networks[i].ID, nw.NetworkID, "Network ID matches")
+		assert.Equal(t, networks[i].Gateway, nw.Gateway, "Gateway matches")
+		assert.Equal(t, networks[i].IPAddress, nw.IPAddress, "IP matches")
+
+		i++
+	}
+}
+
+func TestGateway_hydrateVolumesFromTypeMountPoint(t *testing.T) {
+	mounts := getMockContainers()[0].Mounts
+
+	volumes := hydrateVolumesFromTypeMountPoint(mounts)
+
+	for i, m := range mounts {
+		assert.Equal(t, volumes[i].Mode, m.Mode, "Mode matches")
+		assert.EqualValues(t, volumes[i].Type, m.Type, "Type matches")
+		assert.Equal(t, volumes[i].Name, m.Name, "Name matches")
+		assert.Equal(t, volumes[i].Destination, m.Destination, "Destination matches")
+		assert.Equal(t, volumes[i].Source, m.Source, "Source matches")
+		assert.Equal(t, volumes[i].ReadWrite, m.RW, "Read/Write matches")
+	}
+}
+
+func TestGateway_hydratePortsFromTypePort(t *testing.T) {
+	cPorts := getMockContainers()[0].Ports
+
+	ports := hydratePortsFromTypePort(cPorts)
+
+	for i, m := range cPorts {
+		assert.Equal(t, ports[i].IP, m.IP, "IP matches")
+		assert.Equal(t, ports[i].ContainerPort, m.PrivatePort, "Container Port matches")
+		assert.Equal(t, ports[i].HostPort, m.PublicPort, "Host Port matches")
+		assert.Equal(t, ports[i].Protocol, m.Type, "Protocol matches")
+	}
+}
+
+func TestGateway_hydrateImageFromTypeContainerWithNoTag(t *testing.T) {
+	mockContainer := &types.Container{
+		Image:   "foo/bar",
+		ImageID: "sha256:123456",
+	}
+
+	image := hydrateImageFromTypeContainer(mockContainer)
+
+	assert.Equal(t, image.Name, "foo/bar", "Image name matches")
+	assert.Equal(t, image.Tag, "latest", "Image tag matches")
+	assert.Equal(t, image.ID, mockContainer.ImageID, "Image ID matches")
+}
+
+func TestGateway_hydrateImageFromTypeContainerWithDefinedTag(t *testing.T) {
+	mockContainer := &types.Container{
+		Image:   "foo/bar:1.2.3",
+		ImageID: "sha256:123456",
+	}
+
+	image := hydrateImageFromTypeContainer(mockContainer)
+
+	assert.Equal(t, image.Name, "foo/bar", "Image name matches")
+	assert.Equal(t, image.Tag, "1.2.3", "Image tag matches")
+	assert.Equal(t, image.ID, mockContainer.ImageID, "Image ID matches")
 }
 
 func TestGateway_ContainerGetWithEmptyContainers(t *testing.T) {
