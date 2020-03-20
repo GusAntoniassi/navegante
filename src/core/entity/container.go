@@ -23,8 +23,8 @@ type Container struct {
 	Status     string
 
 	Image    *Image
-	Ports    *[]PortMapping
+	Ports    []PortMapping
 	Labels   map[string]string
-	Volumes  *[]Volume
-	Networks *[]Network
+	Volumes  []Volume
+	Networks []Network
 }

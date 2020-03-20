@@ -29,7 +29,7 @@ func hydrateImageFromTypeContainer(c *types.Container) *entity.Image {
 	}
 }
 
-func hydratePortsFromTypePort(p []types.Port) *[]entity.PortMapping {
+func hydratePortsFromTypePort(p []types.Port) []entity.PortMapping {
 	ports := make([]entity.PortMapping, 0, len(p))
 
 	for _, port := range p {
@@ -41,10 +41,10 @@ func hydratePortsFromTypePort(p []types.Port) *[]entity.PortMapping {
 		})
 	}
 
-	return &ports
+	return ports
 }
 
-func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) *[]entity.Volume {
+func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) []entity.Volume {
 	volumes := make([]entity.Volume, 0, len(mountPoints))
 
 	for _, m := range mountPoints {
@@ -58,10 +58,10 @@ func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) *[]entity.
 		})
 	}
 
-	return &volumes
+	return volumes
 }
 
-func hydrateNetworkFromTypeNetworkSettings(ns types.SummaryNetworkSettings) *[]entity.Network {
+func hydrateNetworkFromTypeNetworkSettings(ns types.SummaryNetworkSettings) []entity.Network {
 	networks := make([]entity.Network, 0, len(ns.Networks))
 
 	for k, n := range ns.Networks {
@@ -75,7 +75,7 @@ func hydrateNetworkFromTypeNetworkSettings(ns types.SummaryNetworkSettings) *[]e
 		})
 	}
 
-	return &networks
+	return networks
 }
 
 func hydrateFromTypeContainer(c *types.Container) *entity.Container {
