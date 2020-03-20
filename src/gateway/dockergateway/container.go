@@ -49,12 +49,12 @@ func hydrateVolumesFromTypeMountPoint(mountPoints []types.MountPoint) []entity.V
 
 	for _, m := range mountPoints {
 		volumes = append(volumes, entity.Volume{
-			Name:          m.Name,
-			Type:          string(m.Type),
-			HostPath:      m.Source,
-			ContainerPath: m.Destination,
-			Mode:          m.Mode,
-			ReadWrite:     m.RW,
+			Name:        m.Name,
+			Type:        string(m.Type),
+			Source:      m.Source,
+			Destination: m.Destination,
+			Mode:        m.Mode,
+			ReadWrite:   m.RW,
 		})
 	}
 
