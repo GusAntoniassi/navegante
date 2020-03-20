@@ -2,6 +2,7 @@ package dockergateway
 
 import (
 	"context"
+	"fmt"
 	networktypes "github.com/docker/docker/api/types/network"
 	"strings"
 	"testing"
@@ -121,6 +122,18 @@ func TestGateway_ContainerGetAll(t *testing.T) {
 	}
 }
 
+func TestGateway_ContainerGetAllWithError(t *testing.T) {
+	mc := minimock.NewController(t)
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(context.Context, types.ContainerListOptions) ([]types.Container, error) {
+		return nil, fmt.Errorf("docker error")
+	})
+
+	gw := NewGateway(dockerMock)
+	_, err := gw.ContainerGetAll()
+
+	assert.NotNilf(t, err, "ContainerGetAll should return an error")
+}
+
 func TestGateway_ContainerGet(t *testing.T) {
 	mockContainer := getMockContainers()[0]
 
@@ -142,6 +155,32 @@ func TestGateway_ContainerGet(t *testing.T) {
 		"Container creation times match")
 	assert.Equal(t, container.Name, strings.TrimLeft(mockContainer.Names[0], "/"),
 		"Container names match")
+}
+
+func TestGateway_ContainerGetWithEmptyContainers(t *testing.T) {
+	mc := minimock.NewController(t)
+
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(ctx context.Context, options types.ContainerListOptions) (ca1 []types.Container, err error) {
+		return []types.Container{}, nil
+	})
+
+	gw := NewGateway(dockerMock)
+	container, err := gw.ContainerGet(entity.ContainerID("abcd"))
+
+	assert.Nilf(t, err, "Should not return errors")
+	assert.Nilf(t, container, "Should return nil if no containers were found")
+}
+
+func TestGateway_ContainerGetWithError(t *testing.T) {
+	mc := minimock.NewController(t)
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(context.Context, types.ContainerListOptions) ([]types.Container, error) {
+		return nil, fmt.Errorf("docker error")
+	})
+
+	gw := NewGateway(dockerMock)
+	_, err := gw.ContainerGet("123")
+
+	assert.NotNilf(t, err, "ContainerGet should return an error")
 }
 
 func TestGateway_hydrateNetworkFromTypeNetworkSettings(t *testing.T) {
@@ -211,19 +250,4 @@ func TestGateway_hydrateImageFromTypeContainerWithDefinedTag(t *testing.T) {
 	assert.Equal(t, image.Name, "foo/bar", "Image name matches")
 	assert.Equal(t, image.Tag, "1.2.3", "Image tag matches")
 	assert.Equal(t, image.ID, mockContainer.ImageID, "Image ID matches")
-}
-
-func TestGateway_ContainerGetWithEmptyContainers(t *testing.T) {
-	mc := minimock.NewController(t)
-
-	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(ctx context.Context, options types.ContainerListOptions) (ca1 []types.Container, err error) {
-		return []types.Container{}, nil
-	})
-
-	gw := NewGateway(dockerMock)
-
-	container, err := gw.ContainerGet(entity.ContainerID("abcd"))
-
-	assert.Nilf(t, err, "Should not return errors")
-	assert.Nilf(t, container, "Should return nil if no containers were found")
 }
