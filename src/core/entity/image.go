@@ -1,5 +1,7 @@
 package entity
 
+import "fmt"
+
 type Image struct {
 	ID   string
 	Name string
@@ -20,4 +22,8 @@ type Image struct {
 	User         string
 	Volumes      []string
 	WorkingDir   string
+}
+
+func (i Image) String() string {
+	return fmt.Sprintf("%s:%s", i.Name, i.Tag)
 }
