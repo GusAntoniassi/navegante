@@ -157,3 +157,67 @@ func TestContainer_getAllContainersError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 	assert.NotEmpty(t, resp.Body)
 }
+
+func TestContainer_getContainer(t *testing.T) {
+	mc := minimock.NewController(t)
+	mockContainers := makeMockContainers()
+	gw := NewContainerMock(mc).ContainerGetMock.Set(func(cid entity.ContainerID) (*entity.Container, error) {
+		return mockContainers[0], nil
+	})
+
+	ts := getTestServer(gw)
+	defer ts.Close()
+
+	resp, err := http.Get(ts.URL + "/containers/0123abcd456e")
+	assert.Nilf(t, err, "http.Get should not return an error")
+
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.Nilf(t, err, "Body reading should not return an error")
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.NotEmpty(t, body)
+
+	var container apiEntity.Container
+	err = json.Unmarshal(body, &container)
+	assert.Nilf(t, err, "Response JSON unmarshalling should not return errors")
+
+	assert.Equal(t, mockContainers[0].ID, container.ID)
+}
+
+func TestContainer_getContainerNotFound(t *testing.T) {
+	mc := minimock.NewController(t)
+	gw := NewContainerMock(mc).ContainerGetMock.Set(func(cid entity.ContainerID) (*entity.Container, error) {
+		return nil, nil
+	})
+
+	ts := getTestServer(gw)
+	defer ts.Close()
+
+	resp, err := http.Get(ts.URL + "/containers/0123abcd456e")
+	assert.Nilf(t, err, "http.Get should not return an error")
+
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.Nilf(t, err, "Body reading should not return an error")
+
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	assert.NotEmpty(t, body)
+}
+
+func TestContainer_getContainerError(t *testing.T) {
+	mc := minimock.NewController(t)
+	gw := NewContainerMock(mc).ContainerGetMock.Set(func(cid entity.ContainerID) (*entity.Container, error) {
+		return nil, errors.Errorf("foobar")
+	})
+
+	ts := getTestServer(gw)
+	defer ts.Close()
+
+	resp, err := http.Get(ts.URL + "/containers/0123abcd456e")
+	assert.Nilf(t, err, "http.Get should not return an error")
+
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.Nilf(t, err, "Body reading should not return an error")
+
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	assert.NotEmpty(t, body)
+}

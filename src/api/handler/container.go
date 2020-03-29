@@ -57,5 +57,35 @@ func getAllContainers(gw containergateway.Gateway) http.Handler {
 }
 
 func getContainer(gw containergateway.Gateway) http.Handler {
-	return nil
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		gwContainer, err := gw.ContainerGet(entity.ContainerID(id))
+
+		if err != nil {
+			log.Print("error calling gw.ContainerGetAll: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error getting the containers from the API"))
+			return
+		}
+
+		if gwContainer == nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(formatJSONError(fmt.Sprintf("Container '%s' not found", id)))
+			return
+		}
+
+		container := apiEntity.NewContainer(gwContainer)
+
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(container)
+
+		if err != nil {
+			log.Print("error converting container to JSON: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error converting container to JSON"))
+			return
+		}
+	})
 }
