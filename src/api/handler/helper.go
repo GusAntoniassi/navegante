@@ -16,7 +16,7 @@ func AddContentType(w http.ResponseWriter, r *http.Request, next http.HandlerFun
 
 func GetNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte("{\"error\": \"Not found\"}"))
+	w.Write([]byte("{\"error\":\"Not found\"}"))
 
 	fmt.Printf(
 		"[notfound] %s | %d | \t %s | %s | %s %s\n",
