@@ -9,3 +9,7 @@ type Network struct {
 	Links   []string
 	Aliases []string
 }
+
+func (n Network) String() string {
+	return n.Name
+}

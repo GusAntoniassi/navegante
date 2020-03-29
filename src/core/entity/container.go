@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -22,10 +23,21 @@ func (p PortMapping) String() string {
 	return fmt.Sprintf("%d:%d/%s", p.HostPort, p.ContainerPort, p.Protocol)
 }
 
+type Cmd []string
+type Entrypoint []string
+
+func (c Cmd) String() string {
+	return strings.Join(c, " ")
+}
+
+func (e Entrypoint) String() string {
+	return strings.Join(e, " ")
+}
+
 type Container struct {
 	ID         ContainerID
-	Cmd        []string
-	Entrypoint []string
+	Cmd        Cmd
+	Entrypoint Entrypoint
 	Created    time.Time
 	Name       string
 	State      string
