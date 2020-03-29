@@ -1,9 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
+	apiEntity "github.com/gusantoniassi/navegante/api/entity"
+	"github.com/gusantoniassi/navegante/core/entity"
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
+	"log"
 	"net/http"
 )
 
@@ -18,7 +23,37 @@ func MakeContainerHandlers(r *mux.Router, n *negroni.Negroni, gw containergatewa
 }
 
 func getAllContainers(gw containergateway.Gateway) http.Handler {
-	return nil
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gwContainers, err := gw.ContainerGetAll()
+
+		if err != nil {
+			log.Println("error calling gw.ContainerGetAll: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error getting the containers from the API"))
+			return
+		}
+
+		if len(gwContainers) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(formatJSONError("No containers running"))
+			return
+		}
+
+		containers := make([]apiEntity.Container, len(gwContainers))
+		for i, c := range gwContainers {
+			containers[i] = apiEntity.NewContainer(c)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(containers)
+
+		if err != nil {
+			log.Println("error converting container to JSON: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error converting container to JSON"))
+			return
+		}
+	})
 }
 
 func getContainer(gw containergateway.Gateway) http.Handler {
