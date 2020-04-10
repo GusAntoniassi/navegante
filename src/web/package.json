@@ -1,0 +1,35 @@
+{
+  "name": "navegante",
+  "version": "0.0.1",
+  "description": "Web interface for the container monitoring and observability tool",
+  "scripts": {
+    "preinstall": "(cd core && npm install) && cd react && npm install",
+    "prestart": "(cd core && npm run build)",
+    "start": "cd react && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GusAntoniassi/navegante.git"
+  },
+  "author": "GusAntoniassi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GusAntoniassi/navegante/issues"
+  },
+  "homepage": "https://github.com/GusAntoniassi/navegante#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3",
+    "typescript-eslint": "0.0.1-alpha.0"
+  }
+}
