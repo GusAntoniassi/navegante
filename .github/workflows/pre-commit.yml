@@ -27,7 +27,7 @@ jobs:
       - name: Setup golangci-lint Action
         uses: nickhstr/action-setup-golangci-lint@v0.1.0
         with:
-          version: v1.24.0
+          version: 1.24.0
 
       # NodeJS deps
       - name: Setup NodeJS
