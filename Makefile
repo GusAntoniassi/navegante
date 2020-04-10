@@ -1,3 +1,7 @@
+install:
+	go mod download
+	(cd web && npm install)
+
 test:
 	go test ./...
 

@@ -35,3 +35,20 @@ The application is being designed to isolate the container API calls with `conta
 
 - Docker Swarm integration. I believe this would be the next logical step since the Docker integration by itself application might not be very useful when running on a single Docker host.
 - Kubernetes integration. Since I believe Kubernetes is more popular at the moment, this would make the tool useful for more people. Although I believe there might be better tools for observing Kubernetes clusters.
+
+## Requirements
+
+Some tools are needed for development:
+- Golang 1.12+
+    - [golangci-lint](https://github.com/golangci/golangci-lint#install), for the pre-commit hook
+- NodeJS v12+
+- npm v6+
+- [pre-commit](https://pre-commit.com/#install)
+- (Optional) [GNU Make](https://www.gnu.org/software/make/) to automate some common tasks
+- (Optional) [Modd](https://github.com/cortesi/modd) for API live reloading
+
+## Initial setup
+
+```shell script
+make install
+```

@@ -9,6 +9,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
+      # Pre-commit deps
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
       - name: set PY
@@ -17,4 +18,22 @@ jobs:
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      # Golang deps
+      - name: Setup Go for use with actions
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.14'
+      - name: Setup golangci-lint Action
+        uses: nickhstr/action-setup-golangci-lint@v0.1.0
+
+      # NodeJS deps
+      - name: Setup NodeJS
+        uses: actions/setup-node@v1.4.1
+        with:
+          node-version: "12.16.1"
+
+      - name: Configure project
+        run: make install
+
       - uses: pre-commit/action@v1.0.1
