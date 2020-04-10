@@ -1,16 +1,10 @@
 package entity
 
 import (
-	"github.com/gusantoniassi/navegante/core/entity"
 	"time"
-)
 
-type PortMapping struct {
-	IP            string
-	ContainerPort uint16
-	HostPort      uint16
-	Protocol      string
-}
+	"github.com/gusantoniassi/navegante/core/entity"
+)
 
 type Container struct {
 	ID         entity.ContainerID `json:"id"`
