@@ -98,7 +98,7 @@ func hydrateFromTypeContainer(c *types.Container) *entity.Container {
 	ec.Ports = hydratePortsFromTypePort(c.Ports)
 	ec.Labels = c.Labels
 	ec.Volumes = hydrateVolumesFromTypeMountPoint(c.Mounts)
-	
+
 	if c.NetworkSettings != nil {
 		ec.Networks = hydrateNetworkFromTypeNetworkSettings(*c.NetworkSettings)
 	}

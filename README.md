@@ -2,7 +2,7 @@
 
 Navegante is a work-in-progress tool that aims to monitor and observe containers running on a Docker host. It is written in Golang, and follows some of the Clean Architecture principles.
 
-Some of the planned features are: 
+Some of the planned features are:
 
 - Viewing containers executed in the host, showing exposed ports, volumes and stats;
 - Executing actions in the containers (run, start, stop, kill);
