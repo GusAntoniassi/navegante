@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-import { plainToClass } from "class-transformer"
+import { plainToClass } from "class-transformer";
 
 ReactDOM.render(
   <React.StrictMode>

@@ -25,6 +25,7 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': 'off',
     'semi': ['error', 'always'],
     'comma-dangle': ['error', 'always-multiline'],
+    'eol-last': ['error', 'always'],
   },
   settings: {
     'import/parsers': {

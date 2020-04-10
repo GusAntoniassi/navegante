@@ -22,8 +22,17 @@ repos:
       - id: golangci-lint
         name: Run golangci-lint
         types: [go]
-        pass_filenames: false
       - id: go-unit-tests
         name: Run go test
         types: [go]
         pass_filenames: false
+
+  # Front-end linting
+  - repo: local
+    hooks:
+      - id: eslint
+        name: Run ESLint for front-end files
+        language: node
+        entry: web/run-eslint.js
+        exclude: ^(?!web\/)
+        files: \.(js|jsx|ts|tsx)$
