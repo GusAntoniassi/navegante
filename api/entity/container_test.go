@@ -1,10 +1,11 @@
 package entity
 
 import (
-	"github.com/gusantoniassi/navegante/core/entity"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/gusantoniassi/navegante/core/entity"
+	"github.com/stretchr/testify/assert"
 )
 
 // @TODO: Put this function somewhere more generic, to allow entity and handler tests to use it

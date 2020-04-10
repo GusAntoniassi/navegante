@@ -3,13 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	apiEntity "github.com/gusantoniassi/navegante/api/entity"
 	"github.com/gusantoniassi/navegante/core/entity"
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
-	"log"
-	"net/http"
 )
 
 func MakeContainerHandlers(r *mux.Router, n *negroni.Negroni, gw containergateway.Gateway) {

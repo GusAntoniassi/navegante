@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/codegangsta/negroni"
 	"github.com/docker/docker/client"
 	"github.com/gorilla/mux"
 	"github.com/gusantoniassi/navegante/api/handler"
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
 	"github.com/gusantoniassi/navegante/gateway/dockergateway"
-	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
 const PORT = 3000

@@ -2,6 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gojuno/minimock/v3"
 	"github.com/gorilla/mux"
@@ -10,11 +16,6 @@ import (
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 func makeMockContainers() []*entity.Container {

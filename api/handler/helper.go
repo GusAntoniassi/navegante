@@ -2,9 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"github.com/codegangsta/negroni"
 	"net/http"
 	"time"
+
+	"github.com/codegangsta/negroni"
 )
 
 func AddContentType(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

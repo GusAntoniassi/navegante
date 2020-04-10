@@ -3,10 +3,11 @@ package dockergateway
 import (
 	"context"
 	"fmt"
-	networktypes "github.com/docker/docker/api/types/network"
 	"strings"
 	"testing"
 	"time"
+
+	networktypes "github.com/docker/docker/api/types/network"
 
 	"github.com/docker/docker/api/types"
 	"github.com/gojuno/minimock/v3"

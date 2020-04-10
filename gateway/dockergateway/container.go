@@ -3,11 +3,12 @@ package dockergateway
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/gusantoniassi/navegante/core/entity"
-	"strings"
-	"time"
 )
 
 func hydrateImageFromTypeContainer(c *types.Container) *entity.Image {
