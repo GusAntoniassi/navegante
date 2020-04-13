@@ -1,0 +1,29 @@
+// Sizes based on Bootstrap: https://getbootstrap.com/docs/4.4/layout/overview/#containers
+
+.container {
+  width: 100%; // mobile-first resolution
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @include media-query-up("small") {
+    max-width: 540px;
+  }
+
+  @include media-query-up("medium") {
+    max-width: 720px;
+  }
+
+  @include media-query-up("large") {
+    max-width: 960px;
+  }
+
+  @include media-query-up("xlarge") {
+    max-width: 1140px;
+  }
+}
+
+.container-fluid {
+  width: 100%;
+}

@@ -1,0 +1,8 @@
+@import "../utility-imports";
+
+.app-content {
+  height: 100%;
+  margin-left: $sidebar-size;
+  background-color: map-get($theme, "background");
+  color: map-get($theme, "text");
+}

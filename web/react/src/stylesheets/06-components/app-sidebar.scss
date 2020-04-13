@@ -1,0 +1,52 @@
+@import "../utility-imports";
+
+$sidebar-color: #111213;
+
+.app-sidebar {
+  padding: 15px;
+  width: $sidebar-size;
+  height: 100%;
+  background: #111213;
+  color: white;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+
+  > .brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: block;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  > .ruler {
+    border-color: lighten($sidebar-color, 10%);
+    border-style: solid;
+    border-top: none;
+    margin: 10px 0;
+  }
+}
+
+.app-sidebar > .list {
+  > .item {
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding: 15px 10px;
+    margin: 0 -10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 0.25px;
+    @include transition(background-color);
+  }
+
+  > .item:hover {
+    background-color: darker($sidebar-color, $amount: 20%);
+  }
+
+  > .item.-active {
+    background-color: lighter($sidebar-color, $amount: 8%);
+    border-right: 3px solid map-get($theme, "accent");
+  }
+}

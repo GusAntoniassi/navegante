@@ -1,0 +1,21 @@
+@import "reset";
+
+html,
+body,
+// This is technically breaking ITCSS, but #root is a div
+// managed by React so it makes sense to me to be here
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 16px;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}

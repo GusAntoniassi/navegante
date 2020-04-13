@@ -1,0 +1,16 @@
+// Inspired by Bootstrap: https://getbootstrap.com/docs/4.4/layout/overview/#responsive-breakpoints
+
+$breakpoints: (
+  "small": 576px,
+  "medium": 768px,
+  "large": 992px,
+  "xlarge": 1200px
+);
+
+$sidebar-size: 250px;
+
+$theme: (
+  "accent": #0db7ed,
+  "background": #2d2d2d,
+  "text": #e7e8eb
+);

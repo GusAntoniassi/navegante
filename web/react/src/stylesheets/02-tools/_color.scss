@@ -1,0 +1,14 @@
+/**
+ * Uses Sass' `mix` function instead of darken/lighten to achieve
+ * a better color output
+ *
+ * @see https://codepen.io/joshmcrty/pen/OVZbBr
+ */
+
+@function darker($color, $amount) {
+  @return mix(black, $color, $amount);
+}
+
+@function lighter($color, $amount) {
+  @return mix(white, $color, $amount);
+}

@@ -1,0 +1,21 @@
+@mixin media-query-up($name) {
+  $min: map-get(
+    $map: $breakpoints,
+    $key: $name
+  );
+
+  @media (min-width: $min) {
+    @content;
+  }
+}
+
+@mixin media-query-down($name) {
+  $min: map-get(
+    $map: $breakpoints,
+    $key: $name
+  );
+
+  @media (max-width: $min) {
+    @content;
+  }
+}
