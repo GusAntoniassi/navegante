@@ -12,5 +12,14 @@
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
+    },
+    "[scss]": {
+        "editor.tabSize": 2
+    },
+    "[html]": {
+        "editor.tabSize": 4
+    },
+    "[javascript]": {
+        "editor.tabSize": 2
     }
 }
