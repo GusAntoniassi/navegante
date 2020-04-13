@@ -1,0 +1,11 @@
+{
+    "presets": [
+        "@babel/env",
+        "react-app"
+    ],
+    "plugins": [
+        [
+            "babel-plugin-root-import"
+        ]
+    ]
+}

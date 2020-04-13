@@ -22,4 +22,9 @@ module.exports = {
     ],
     'semi': ['error', 'always'],
   },
+  settings: {
+    "import/resolver": {
+      "babel-plugin-root-import": {}
+    }
+  }
 };

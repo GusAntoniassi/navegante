@@ -8,15 +8,23 @@
     "@types/react-dom": "^16.9.6",
     "class-transformer": "^0.2.3",
     "core": "file:../core",
+    "node-sass": "^4.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-icons": "^3.9.0",
     "react-scripts": "^3.4.1",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "@rescripts/cli": "0.0.14",
+    "@rescripts/rescript-env": "0.0.12",
+    "babel-plugin-root-import": "^6.5.0"
   },
   "scripts": {
-    "start": "react-scripts start"
+    "start": "rescripts start"
   },
+  "rescripts": [
+    "env"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
