@@ -1,4 +1,4 @@
 module.exports = [
   ['use-babel-config', '.babelrc'],
-  ['use-eslint-config', '.eslintrc.js']
+  ['use-eslint-config', '.eslintrc.js'],
 ];

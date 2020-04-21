@@ -1,8 +1,17 @@
 @import "../utility-imports";
 
 .app-content {
-  height: 100%;
+  position: relative;
   margin-left: $sidebar-size;
+  margin-top: calc(15px * 2 + #{$header-font-size} - 1px);
   background-color: map-get($theme, "background");
   color: map-get($theme, "text");
+  min-height: 100%; // fallback
+  min-height: 100vh;
+
+  @include transition(margin-left);
+}
+
+.app-sidebar.-collapsed + .app-content {
+  margin-left: 0;
 }

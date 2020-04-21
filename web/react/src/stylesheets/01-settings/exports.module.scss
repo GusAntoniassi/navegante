@@ -1,0 +1,10 @@
+// This file exports some of the SASS variables to be used in
+// the JS code
+
+@import "./";
+
+@each $key, $value in $breakpoints {
+  :export {
+    breakpoint-#{$key}: $value;
+  }
+}

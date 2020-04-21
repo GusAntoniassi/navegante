@@ -1,10 +1,13 @@
 @import "reset";
 
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
 html,
-body,
-// This is technically breaking ITCSS, but #root is a div
-// managed by React so it makes sense to me to be here
-#root {
+body {
   height: 100%;
 }
 
@@ -14,8 +17,10 @@ body {
   font-size: 16px;
 }
 
-*,
-::after,
-::before {
-  box-sizing: border-box;
+// This is technically breaking ITCSS, but #root is a div
+// managed by React so it makes sense to me to be here
+#root {
+  width: 100vw;
+  height: 100%;
+  overflow-x: hidden;
 }

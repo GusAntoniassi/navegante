@@ -4,13 +4,14 @@ $breakpoints: (
   "small": 576px,
   "medium": 768px,
   "large": 992px,
-  "xlarge": 1200px
+  "xlarge": 1200px,
 );
 
 $sidebar-size: 250px;
+$header-font-size: 1.5rem;
 
 $theme: (
   "accent": #0db7ed,
   "background": #2d2d2d,
-  "text": #e7e8eb
+  "text": #e7e8eb,
 );

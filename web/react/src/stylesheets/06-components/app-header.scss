@@ -1,16 +1,56 @@
+@import "../utility-imports";
+
 .app-header {
   padding: 15px;
   background-color: #19191b;
   color: white;
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  top: 0;
+  height: calc(15px * 2 + $header-font-size);
 
   > .pagename {
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: $header-font-size;
     display: inline-block;
   }
 
-  > .menuicon {
-    margin-right: 15px;
-    cursor: pointer;
+  > .sidebar-togglebutton + .pagename {
+    margin-left: 15px;
+  }
+}
+
+.sidebar-togglebutton {
+  $collapse-size: 20px;
+  $collapse-background: map-get($theme, "accent");
+
+  position: absolute;
+  width: $collapse-size;
+  height: $collapse-size;
+  left: -$collapse-size/2;
+  background-color: $collapse-background;
+  color: map-get($theme, "text");
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+  @include transition(all);
+
+  > .icon {
+    width: $collapse-size * 0.7;
+    height: $collapse-size * 0.7;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  &.-collapsed {
+    left: -2px;
+    border-radius: 0 50% 50% 0;
+
+    > .icon {
+      transform: translateX(-50%) translateY(-50%) rotateZ(180deg);
+    }
   }
 }

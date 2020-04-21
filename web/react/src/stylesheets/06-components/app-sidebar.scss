@@ -13,6 +13,8 @@ $sidebar-color: #111213;
   top: 0;
   left: 0;
   overflow-x: hidden;
+  visibility: visible;
+  @include transition((left, visibility));
 
   > .brand {
     font-weight: bold;
@@ -27,6 +29,11 @@ $sidebar-color: #111213;
     border-style: solid;
     border-top: none;
     margin: 10px 0;
+  }
+
+  &.-collapsed {
+    left: -$sidebar-size;
+    visibility: hidden;
   }
 }
 
