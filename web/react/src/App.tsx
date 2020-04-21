@@ -5,6 +5,7 @@ import { Container } from './components/containers/Container';
 
 import './stylesheets/app.scss';
 import './stylesheets/06-components/app-content.scss';
+import './stylesheets/06-components/container-list.scss';
 
 import { Container as EntityContainer } from 'core';
 const container = new EntityContainer();
@@ -19,7 +20,13 @@ function App() {
       <Sidebar/>
       <div className="app-content">
         <Header/>
-        <Container container={container}/>
+        <div className="container container-list">
+          <Container container={container}/>
+          <Container container={container}/>
+          <Container container={container}/>
+          <Container container={container}/>
+          <Container container={container}/>
+        </div>
       </div>
     </>
   );

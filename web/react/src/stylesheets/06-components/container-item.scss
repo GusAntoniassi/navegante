@@ -1,0 +1,75 @@
+@import "../utility-imports";
+
+$border-color: lighter(map-get($theme, "background"), 30%);
+
+.container-item {
+  margin: 0 0 30px;
+  border: 1px solid $border-color;
+  position: relative;
+  background: lighter(map-get($theme, "background"), 10%);
+  box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.35);
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-left: 0;
+  }
+
+  > .heading {
+    border-bottom: 1px solid $border-color;
+    padding: 5px 10px;
+    font-weight: bold;
+  }
+
+  > .content {
+    padding: 10px;
+    line-height: 120%;
+    word-break: break-word;
+  }
+
+  > .footer {
+    padding: 5px;
+    font-size: 1.25rem;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+.container-attribute {
+  &:not(:last-of-type) {
+    margin-bottom: 5px;
+  }
+
+  > .list {
+    max-height: 0px;
+    overflow: hidden;
+    @include transition(max-height, 0.1s, ease-in-out);
+  }
+
+  > .chevron {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 0 5px;
+    cursor: pointer;
+  }
+
+  > .chevron > .icon {
+    transform: rotate(90deg);
+    @include transition(transform, 0.3s);
+  }
+
+  &.-collapsed > .list {
+    max-height: 100px;
+  }
+
+  &.-collapsed > .chevron > .icon {
+    transform: rotate(-90deg);
+  }
+
+  > .list > .item {
+    margin-left: 10px;
+  }
+}
