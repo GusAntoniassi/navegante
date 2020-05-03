@@ -13,6 +13,7 @@ container.id = "abc123456";
 container.name = "foobar";
 container.ports = ["80:8000/TCP"];
 container.volumes = ["/var/lib/data", "/home/foo/bar:/usr/local/application"];
+container.networks = ["bridge", "foobar"];
 
 function App() {
   return (

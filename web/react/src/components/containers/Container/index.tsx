@@ -50,6 +50,12 @@ export const Container: React.FC<Props> = ({
                     </ul>
                 </li>
                 <li className="container-attribute -collapsed">
+                    Networks <Chevron/>
+                    <ul className="list">
+                        {container.networks.map((network, index) => <li className="item" key={index}>- {network}</li>)}
+                    </ul>
+                </li>
+                <li className="container-attribute -collapsed">
                     Stats <Chevron/>
                     <ul className="list">
                         <li className="item">CPU%: 0.01%</li>
