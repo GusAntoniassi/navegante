@@ -8,6 +8,7 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build-watch": "tsc --watch"
   }
 }

@@ -4,8 +4,7 @@
   "description": "Web interface for the container monitoring and observability tool",
   "scripts": {
     "preinstall": "(cd core && npm install) && cd react && npm install",
-    "prestart": "(cd core && npm run build)",
-    "start": "cd react && npm start",
+    "start": "(cd core && npm run build-watch) & (cd react && npm start) && fg",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

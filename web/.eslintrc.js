@@ -26,6 +26,16 @@ module.exports = {
     'semi': ['error', 'always'],
     'comma-dangle': ['error', 'always-multiline'],
     'eol-last': ['error', 'always'],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
   },
   settings: {
     'import/parsers': {
