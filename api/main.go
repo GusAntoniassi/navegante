@@ -15,13 +15,14 @@ import (
 	"github.com/gusantoniassi/navegante/gateway/dockergateway"
 )
 
-const PORT = 3000
+const PORT = 5000
 
 func main() {
 	r := mux.NewRouter()
 	n := negroni.New(
 		negroni.NewLogger(),
 		negroni.HandlerFunc(handler.AddContentType),
+		negroni.HandlerFunc(handler.AllowCORS),
 	)
 
 	gw, err := getDockerGateway()

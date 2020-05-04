@@ -15,6 +15,20 @@ func AddContentType(w http.ResponseWriter, r *http.Request, next http.HandlerFun
 	next(w, r)
 }
 
+func AllowCORS(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	w.Header().Set("Access-Control-Allow-Origin", "*") // @TODO: Validate based on environment
+	w.Header().Set(
+		"Access-Control-Allow-Methods",
+		"POST, GET, OPTIONS, PUT, DELETE",
+	)
+	w.Header().Set(
+		"Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length, Accept-Encoding, Authorization",
+	)
+
+	next(w, r)
+}
+
 func GetNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("{\"error\":\"Not found\"}"))
