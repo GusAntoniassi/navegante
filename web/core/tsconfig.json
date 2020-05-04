@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "lib": [
-      "esnext"
+      "esnext",
+      "dom"
     ],
     "outDir": "./dist", /* Redirect output structure to the directory. */
     "sourceMap": true, /* Generates corresponding '.map' file. */

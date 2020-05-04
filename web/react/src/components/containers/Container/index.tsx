@@ -32,29 +32,38 @@ export const Container: React.FC<Props> = ({
     return (
         <div className="container-item">
             <div className="heading">
-                {container.id}
+                {container.name}
             </div>
 
             <ul className="content">
-                <li className="container-attribute">Name: {container.name}</li>
+                <li className="container-attribute">ID: {container.id?.substr(0, 12)}</li>
+                {container.ports?.length > 0 &&
                 <li className="container-attribute -collapsed">
                     Ports <Chevron/>
                     <ul className="list">
                         {container.ports.map((port, index) => <li className="item" key={index}>- {port}</li>)}
                     </ul>
                 </li>
+                }
+
+                {container.volumes?.length > 0 &&
                 <li className="container-attribute -collapsed">
                     Volumes <Chevron/>
                     <ul className="list">
                         {container.volumes.map((volume, index) => <li className="item" key={index}>- {volume}</li>)}
                     </ul>
                 </li>
+                }
+
+                {container.networks?.length > 0 &&
                 <li className="container-attribute -collapsed">
                     Networks <Chevron/>
                     <ul className="list">
                         {container.networks.map((network, index) => <li className="item" key={index}>- {network}</li>)}
                     </ul>
                 </li>
+                }
+
                 <li className="container-attribute -collapsed">
                     Stats <Chevron/>
                     <ul className="list">

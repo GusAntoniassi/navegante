@@ -35,7 +35,8 @@ module.exports = {
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "no-plusplus": 'off'
   },
   settings: {
     'import/parsers': {

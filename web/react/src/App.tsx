@@ -1,19 +1,11 @@
 import React from 'react';
-import { Header } from './components/ui/Header';
-import { Sidebar } from './components/ui/Sidebar';
-import { Container } from './components/containers/Container';
+import { Header } from 'components/ui/Header';
+import { Sidebar } from 'components/ui/Sidebar';
 
-import './stylesheets/app.scss';
-import './stylesheets/06-components/app-content.scss';
-import './stylesheets/06-components/container-list.scss';
+import 'stylesheets/app.scss';
+import 'stylesheets/06-components/app-content.scss';
 
-import { Container as EntityContainer } from 'core';
-const container = new EntityContainer();
-container.id = "abc123456";
-container.name = "foobar";
-container.ports = ["80:8000/TCP"];
-container.volumes = ["/var/lib/data", "/home/foo/bar:/usr/local/application"];
-container.networks = ["bridge", "foobar"];
+import { ContainerList } from 'components/containers/ContainerList';
 
 function App() {
   return (
@@ -21,13 +13,7 @@ function App() {
       <Sidebar/>
       <div className="app-content">
         <Header/>
-        <div className="container container-list">
-          <Container container={container}/>
-          <Container container={container}/>
-          <Container container={container}/>
-          <Container container={container}/>
-          <Container container={container}/>
-        </div>
+        <ContainerList/>
       </div>
     </>
   );

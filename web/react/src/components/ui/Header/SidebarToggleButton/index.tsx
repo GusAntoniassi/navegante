@@ -13,7 +13,6 @@ export const SidebarToggleButton = (props: Props) => {
     const doSidebarCollapse = React.useCallback(() => {
         const sidebar = document.getElementsByClassName('app-sidebar');
         if (!sidebar || sidebar.length === 0) {
-            console.log('null sidebar');
             return;
         }
 
