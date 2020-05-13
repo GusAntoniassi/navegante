@@ -13,7 +13,7 @@ export const ContainerList = () => {
             setContainers(apiContainers);
         }).catch((err) => {
             // 404 is expected from the API when there are no containers running
-            if (err.response.status === 404) {
+            if (err.response && err.response.status === 404) {
                 return;
             }
 
