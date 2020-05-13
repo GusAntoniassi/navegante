@@ -59,6 +59,18 @@ type ContainerMock struct {
 	beforeContainerRunCounter uint64
 	ContainerRunMock          mContainerMockContainerRun
 
+	funcContainerStats          func(cid string) (sp1 *entity.Stat, err error)
+	inspectFuncContainerStats   func(cid string)
+	afterContainerStatsCounter  uint64
+	beforeContainerStatsCounter uint64
+	ContainerStatsMock          mContainerMockContainerStats
+
+	funcContainerStatsAll          func() (spa1 []*entity.Stat, err error)
+	inspectFuncContainerStatsAll   func()
+	afterContainerStatsAllCounter  uint64
+	beforeContainerStatsAllCounter uint64
+	ContainerStatsAllMock          mContainerMockContainerStatsAll
+
 	funcContainerStop          func(c *entity.Container) (err error)
 	inspectFuncContainerStop   func(c *entity.Container)
 	afterContainerStopCounter  uint64
@@ -92,6 +104,11 @@ func NewContainerMock(t minimock.Tester) *ContainerMock {
 
 	m.ContainerRunMock = mContainerMockContainerRun{mock: m}
 	m.ContainerRunMock.callArgs = []*ContainerMockContainerRunParams{}
+
+	m.ContainerStatsMock = mContainerMockContainerStats{mock: m}
+	m.ContainerStatsMock.callArgs = []*ContainerMockContainerStatsParams{}
+
+	m.ContainerStatsAllMock = mContainerMockContainerStatsAll{mock: m}
 
 	m.ContainerStopMock = mContainerMockContainerStop{mock: m}
 	m.ContainerStopMock.callArgs = []*ContainerMockContainerStopParams{}
@@ -1534,6 +1551,366 @@ func (m *ContainerMock) MinimockContainerRunInspect() {
 	}
 }
 
+type mContainerMockContainerStats struct {
+	mock               *ContainerMock
+	defaultExpectation *ContainerMockContainerStatsExpectation
+	expectations       []*ContainerMockContainerStatsExpectation
+
+	callArgs []*ContainerMockContainerStatsParams
+	mutex    sync.RWMutex
+}
+
+// ContainerMockContainerStatsExpectation specifies expectation struct of the Container.ContainerStats
+type ContainerMockContainerStatsExpectation struct {
+	mock    *ContainerMock
+	params  *ContainerMockContainerStatsParams
+	results *ContainerMockContainerStatsResults
+	Counter uint64
+}
+
+// ContainerMockContainerStatsParams contains parameters of the Container.ContainerStats
+type ContainerMockContainerStatsParams struct {
+	cid string
+}
+
+// ContainerMockContainerStatsResults contains results of the Container.ContainerStats
+type ContainerMockContainerStatsResults struct {
+	sp1 *entity.Stat
+	err error
+}
+
+// Expect sets up expected params for Container.ContainerStats
+func (mmContainerStats *mContainerMockContainerStats) Expect(cid string) *mContainerMockContainerStats {
+	if mmContainerStats.mock.funcContainerStats != nil {
+		mmContainerStats.mock.t.Fatalf("ContainerMock.ContainerStats mock is already set by Set")
+	}
+
+	if mmContainerStats.defaultExpectation == nil {
+		mmContainerStats.defaultExpectation = &ContainerMockContainerStatsExpectation{}
+	}
+
+	mmContainerStats.defaultExpectation.params = &ContainerMockContainerStatsParams{cid}
+	for _, e := range mmContainerStats.expectations {
+		if minimock.Equal(e.params, mmContainerStats.defaultExpectation.params) {
+			mmContainerStats.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmContainerStats.defaultExpectation.params)
+		}
+	}
+
+	return mmContainerStats
+}
+
+// Inspect accepts an inspector function that has same arguments as the Container.ContainerStats
+func (mmContainerStats *mContainerMockContainerStats) Inspect(f func(cid string)) *mContainerMockContainerStats {
+	if mmContainerStats.mock.inspectFuncContainerStats != nil {
+		mmContainerStats.mock.t.Fatalf("Inspect function is already set for ContainerMock.ContainerStats")
+	}
+
+	mmContainerStats.mock.inspectFuncContainerStats = f
+
+	return mmContainerStats
+}
+
+// Return sets up results that will be returned by Container.ContainerStats
+func (mmContainerStats *mContainerMockContainerStats) Return(sp1 *entity.Stat, err error) *ContainerMock {
+	if mmContainerStats.mock.funcContainerStats != nil {
+		mmContainerStats.mock.t.Fatalf("ContainerMock.ContainerStats mock is already set by Set")
+	}
+
+	if mmContainerStats.defaultExpectation == nil {
+		mmContainerStats.defaultExpectation = &ContainerMockContainerStatsExpectation{mock: mmContainerStats.mock}
+	}
+	mmContainerStats.defaultExpectation.results = &ContainerMockContainerStatsResults{sp1, err}
+	return mmContainerStats.mock
+}
+
+//Set uses given function f to mock the Container.ContainerStats method
+func (mmContainerStats *mContainerMockContainerStats) Set(f func(cid string) (sp1 *entity.Stat, err error)) *ContainerMock {
+	if mmContainerStats.defaultExpectation != nil {
+		mmContainerStats.mock.t.Fatalf("Default expectation is already set for the Container.ContainerStats method")
+	}
+
+	if len(mmContainerStats.expectations) > 0 {
+		mmContainerStats.mock.t.Fatalf("Some expectations are already set for the Container.ContainerStats method")
+	}
+
+	mmContainerStats.mock.funcContainerStats = f
+	return mmContainerStats.mock
+}
+
+// When sets expectation for the Container.ContainerStats which will trigger the result defined by the following
+// Then helper
+func (mmContainerStats *mContainerMockContainerStats) When(cid string) *ContainerMockContainerStatsExpectation {
+	if mmContainerStats.mock.funcContainerStats != nil {
+		mmContainerStats.mock.t.Fatalf("ContainerMock.ContainerStats mock is already set by Set")
+	}
+
+	expectation := &ContainerMockContainerStatsExpectation{
+		mock:   mmContainerStats.mock,
+		params: &ContainerMockContainerStatsParams{cid},
+	}
+	mmContainerStats.expectations = append(mmContainerStats.expectations, expectation)
+	return expectation
+}
+
+// Then sets up Container.ContainerStats return parameters for the expectation previously defined by the When method
+func (e *ContainerMockContainerStatsExpectation) Then(sp1 *entity.Stat, err error) *ContainerMock {
+	e.results = &ContainerMockContainerStatsResults{sp1, err}
+	return e.mock
+}
+
+// ContainerStats implements containergateway.Container
+func (mmContainerStats *ContainerMock) ContainerStats(cid string) (sp1 *entity.Stat, err error) {
+	mm_atomic.AddUint64(&mmContainerStats.beforeContainerStatsCounter, 1)
+	defer mm_atomic.AddUint64(&mmContainerStats.afterContainerStatsCounter, 1)
+
+	if mmContainerStats.inspectFuncContainerStats != nil {
+		mmContainerStats.inspectFuncContainerStats(cid)
+	}
+
+	mm_params := &ContainerMockContainerStatsParams{cid}
+
+	// Record call args
+	mmContainerStats.ContainerStatsMock.mutex.Lock()
+	mmContainerStats.ContainerStatsMock.callArgs = append(mmContainerStats.ContainerStatsMock.callArgs, mm_params)
+	mmContainerStats.ContainerStatsMock.mutex.Unlock()
+
+	for _, e := range mmContainerStats.ContainerStatsMock.expectations {
+		if minimock.Equal(e.params, mm_params) {
+			mm_atomic.AddUint64(&e.Counter, 1)
+			return e.results.sp1, e.results.err
+		}
+	}
+
+	if mmContainerStats.ContainerStatsMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmContainerStats.ContainerStatsMock.defaultExpectation.Counter, 1)
+		mm_want := mmContainerStats.ContainerStatsMock.defaultExpectation.params
+		mm_got := ContainerMockContainerStatsParams{cid}
+		if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
+			mmContainerStats.t.Errorf("ContainerMock.ContainerStats got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+		}
+
+		mm_results := mmContainerStats.ContainerStatsMock.defaultExpectation.results
+		if mm_results == nil {
+			mmContainerStats.t.Fatal("No results are set for the ContainerMock.ContainerStats")
+		}
+		return (*mm_results).sp1, (*mm_results).err
+	}
+	if mmContainerStats.funcContainerStats != nil {
+		return mmContainerStats.funcContainerStats(cid)
+	}
+	mmContainerStats.t.Fatalf("Unexpected call to ContainerMock.ContainerStats. %v", cid)
+	return
+}
+
+// ContainerStatsAfterCounter returns a count of finished ContainerMock.ContainerStats invocations
+func (mmContainerStats *ContainerMock) ContainerStatsAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmContainerStats.afterContainerStatsCounter)
+}
+
+// ContainerStatsBeforeCounter returns a count of ContainerMock.ContainerStats invocations
+func (mmContainerStats *ContainerMock) ContainerStatsBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmContainerStats.beforeContainerStatsCounter)
+}
+
+// Calls returns a list of arguments used in each call to ContainerMock.ContainerStats.
+// The list is in the same order as the calls were made (i.e. recent calls have a higher index)
+func (mmContainerStats *mContainerMockContainerStats) Calls() []*ContainerMockContainerStatsParams {
+	mmContainerStats.mutex.RLock()
+
+	argCopy := make([]*ContainerMockContainerStatsParams, len(mmContainerStats.callArgs))
+	copy(argCopy, mmContainerStats.callArgs)
+
+	mmContainerStats.mutex.RUnlock()
+
+	return argCopy
+}
+
+// MinimockContainerStatsDone returns true if the count of the ContainerStats invocations corresponds
+// the number of defined expectations
+func (m *ContainerMock) MinimockContainerStatsDone() bool {
+	for _, e := range m.ContainerStatsMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			return false
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.ContainerStatsMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterContainerStatsCounter) < 1 {
+		return false
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcContainerStats != nil && mm_atomic.LoadUint64(&m.afterContainerStatsCounter) < 1 {
+		return false
+	}
+	return true
+}
+
+// MinimockContainerStatsInspect logs each unmet expectation
+func (m *ContainerMock) MinimockContainerStatsInspect() {
+	for _, e := range m.ContainerStatsMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			m.t.Errorf("Expected call to ContainerMock.ContainerStats with params: %#v", *e.params)
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.ContainerStatsMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterContainerStatsCounter) < 1 {
+		if m.ContainerStatsMock.defaultExpectation.params == nil {
+			m.t.Error("Expected call to ContainerMock.ContainerStats")
+		} else {
+			m.t.Errorf("Expected call to ContainerMock.ContainerStats with params: %#v", *m.ContainerStatsMock.defaultExpectation.params)
+		}
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcContainerStats != nil && mm_atomic.LoadUint64(&m.afterContainerStatsCounter) < 1 {
+		m.t.Error("Expected call to ContainerMock.ContainerStats")
+	}
+}
+
+type mContainerMockContainerStatsAll struct {
+	mock               *ContainerMock
+	defaultExpectation *ContainerMockContainerStatsAllExpectation
+	expectations       []*ContainerMockContainerStatsAllExpectation
+}
+
+// ContainerMockContainerStatsAllExpectation specifies expectation struct of the Container.ContainerStatsAll
+type ContainerMockContainerStatsAllExpectation struct {
+	mock *ContainerMock
+
+	results *ContainerMockContainerStatsAllResults
+	Counter uint64
+}
+
+// ContainerMockContainerStatsAllResults contains results of the Container.ContainerStatsAll
+type ContainerMockContainerStatsAllResults struct {
+	spa1 []*entity.Stat
+	err  error
+}
+
+// Expect sets up expected params for Container.ContainerStatsAll
+func (mmContainerStatsAll *mContainerMockContainerStatsAll) Expect() *mContainerMockContainerStatsAll {
+	if mmContainerStatsAll.mock.funcContainerStatsAll != nil {
+		mmContainerStatsAll.mock.t.Fatalf("ContainerMock.ContainerStatsAll mock is already set by Set")
+	}
+
+	if mmContainerStatsAll.defaultExpectation == nil {
+		mmContainerStatsAll.defaultExpectation = &ContainerMockContainerStatsAllExpectation{}
+	}
+
+	return mmContainerStatsAll
+}
+
+// Inspect accepts an inspector function that has same arguments as the Container.ContainerStatsAll
+func (mmContainerStatsAll *mContainerMockContainerStatsAll) Inspect(f func()) *mContainerMockContainerStatsAll {
+	if mmContainerStatsAll.mock.inspectFuncContainerStatsAll != nil {
+		mmContainerStatsAll.mock.t.Fatalf("Inspect function is already set for ContainerMock.ContainerStatsAll")
+	}
+
+	mmContainerStatsAll.mock.inspectFuncContainerStatsAll = f
+
+	return mmContainerStatsAll
+}
+
+// Return sets up results that will be returned by Container.ContainerStatsAll
+func (mmContainerStatsAll *mContainerMockContainerStatsAll) Return(spa1 []*entity.Stat, err error) *ContainerMock {
+	if mmContainerStatsAll.mock.funcContainerStatsAll != nil {
+		mmContainerStatsAll.mock.t.Fatalf("ContainerMock.ContainerStatsAll mock is already set by Set")
+	}
+
+	if mmContainerStatsAll.defaultExpectation == nil {
+		mmContainerStatsAll.defaultExpectation = &ContainerMockContainerStatsAllExpectation{mock: mmContainerStatsAll.mock}
+	}
+	mmContainerStatsAll.defaultExpectation.results = &ContainerMockContainerStatsAllResults{spa1, err}
+	return mmContainerStatsAll.mock
+}
+
+//Set uses given function f to mock the Container.ContainerStatsAll method
+func (mmContainerStatsAll *mContainerMockContainerStatsAll) Set(f func() (spa1 []*entity.Stat, err error)) *ContainerMock {
+	if mmContainerStatsAll.defaultExpectation != nil {
+		mmContainerStatsAll.mock.t.Fatalf("Default expectation is already set for the Container.ContainerStatsAll method")
+	}
+
+	if len(mmContainerStatsAll.expectations) > 0 {
+		mmContainerStatsAll.mock.t.Fatalf("Some expectations are already set for the Container.ContainerStatsAll method")
+	}
+
+	mmContainerStatsAll.mock.funcContainerStatsAll = f
+	return mmContainerStatsAll.mock
+}
+
+// ContainerStatsAll implements containergateway.Container
+func (mmContainerStatsAll *ContainerMock) ContainerStatsAll() (spa1 []*entity.Stat, err error) {
+	mm_atomic.AddUint64(&mmContainerStatsAll.beforeContainerStatsAllCounter, 1)
+	defer mm_atomic.AddUint64(&mmContainerStatsAll.afterContainerStatsAllCounter, 1)
+
+	if mmContainerStatsAll.inspectFuncContainerStatsAll != nil {
+		mmContainerStatsAll.inspectFuncContainerStatsAll()
+	}
+
+	if mmContainerStatsAll.ContainerStatsAllMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmContainerStatsAll.ContainerStatsAllMock.defaultExpectation.Counter, 1)
+
+		mm_results := mmContainerStatsAll.ContainerStatsAllMock.defaultExpectation.results
+		if mm_results == nil {
+			mmContainerStatsAll.t.Fatal("No results are set for the ContainerMock.ContainerStatsAll")
+		}
+		return (*mm_results).spa1, (*mm_results).err
+	}
+	if mmContainerStatsAll.funcContainerStatsAll != nil {
+		return mmContainerStatsAll.funcContainerStatsAll()
+	}
+	mmContainerStatsAll.t.Fatalf("Unexpected call to ContainerMock.ContainerStatsAll.")
+	return
+}
+
+// ContainerStatsAllAfterCounter returns a count of finished ContainerMock.ContainerStatsAll invocations
+func (mmContainerStatsAll *ContainerMock) ContainerStatsAllAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmContainerStatsAll.afterContainerStatsAllCounter)
+}
+
+// ContainerStatsAllBeforeCounter returns a count of ContainerMock.ContainerStatsAll invocations
+func (mmContainerStatsAll *ContainerMock) ContainerStatsAllBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmContainerStatsAll.beforeContainerStatsAllCounter)
+}
+
+// MinimockContainerStatsAllDone returns true if the count of the ContainerStatsAll invocations corresponds
+// the number of defined expectations
+func (m *ContainerMock) MinimockContainerStatsAllDone() bool {
+	for _, e := range m.ContainerStatsAllMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			return false
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.ContainerStatsAllMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterContainerStatsAllCounter) < 1 {
+		return false
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcContainerStatsAll != nil && mm_atomic.LoadUint64(&m.afterContainerStatsAllCounter) < 1 {
+		return false
+	}
+	return true
+}
+
+// MinimockContainerStatsAllInspect logs each unmet expectation
+func (m *ContainerMock) MinimockContainerStatsAllInspect() {
+	for _, e := range m.ContainerStatsAllMock.expectations {
+		if mm_atomic.LoadUint64(&e.Counter) < 1 {
+			m.t.Error("Expected call to ContainerMock.ContainerStatsAll")
+		}
+	}
+
+	// if default expectation was set then invocations count should be greater than zero
+	if m.ContainerStatsAllMock.defaultExpectation != nil && mm_atomic.LoadUint64(&m.afterContainerStatsAllCounter) < 1 {
+		m.t.Error("Expected call to ContainerMock.ContainerStatsAll")
+	}
+	// if func was set then invocations count should be greater than zero
+	if m.funcContainerStatsAll != nil && mm_atomic.LoadUint64(&m.afterContainerStatsAllCounter) < 1 {
+		m.t.Error("Expected call to ContainerMock.ContainerStatsAll")
+	}
+}
+
 type mContainerMockContainerStop struct {
 	mock               *ContainerMock
 	defaultExpectation *ContainerMockContainerStopExpectation
@@ -1766,6 +2143,10 @@ func (m *ContainerMock) MinimockFinish() {
 
 		m.MinimockContainerRunInspect()
 
+		m.MinimockContainerStatsInspect()
+
+		m.MinimockContainerStatsAllInspect()
+
 		m.MinimockContainerStopInspect()
 		m.t.FailNow()
 	}
@@ -1797,5 +2178,7 @@ func (m *ContainerMock) minimockDone() bool {
 		m.MinimockContainerRemoveDone() &&
 		m.MinimockContainerRestartDone() &&
 		m.MinimockContainerRunDone() &&
+		m.MinimockContainerStatsDone() &&
+		m.MinimockContainerStatsAllDone() &&
 		m.MinimockContainerStopDone()
 }
