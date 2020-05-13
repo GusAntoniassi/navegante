@@ -1,12 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/docker/docker/client"
+	"github.com/gusantoniassi/navegante/core/entity"
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
 	"github.com/gusantoniassi/navegante/gateway/dockergateway"
+
+	"github.com/docker/docker/client"
 )
 
 func main() {
@@ -19,12 +20,46 @@ func main() {
 	}
 
 	cGw := containergateway.Container(dockergateway.NewGateway(c))
-	containers, err := cGw.ContainerGetAll()
+
+	//data, err := getContainers(cGw)
+	data, err := getStats(cGw)
 
 	if err != nil {
 		panic(err)
 	}
 
-	data, _ := json.Marshal(containers)
-	fmt.Printf("%s\n", data)
+	//marshalled, _ := json.Marshal(data)
+	//fmt.Printf("%s\n", marshalled)
+
+	for _, v := range data {
+		fmt.Printf(
+			"ID: %s\n"+
+				"CPU%%: %.2f\n"+
+				"Mem%%: %.2f\n"+
+				"Mem usg/lim: %s/%s\n"+
+				"Net I/O: %s/%s\n"+
+				"Block I/O: %s/%s\n",
+			v.ContainerID[:12],
+			v.CPUPercent,
+			v.MemoryPercent,
+			v.MemoryUsage,
+			v.MemoryTotal,
+			v.NetworkInput,
+			v.NetworkOutput,
+			v.BlockRead,
+			v.BlockWrite,
+		)
+	}
+}
+
+func getContainers(cGw containergateway.Container) ([]*entity.Container, error) {
+	containers, err := cGw.ContainerGetAll()
+
+	return containers, err
+}
+
+func getStats(cGw containergateway.Container) ([]*entity.Stat, error) {
+	stats, err := cGw.ContainerStatsAll()
+
+	return stats, err
 }
