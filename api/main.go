@@ -35,6 +35,7 @@ func main() {
 
 	api1 := r.PathPrefix("/v1").Subrouter()
 	handler.MakeContainerHandlers(api1, n, *gw)
+	handler.MakeStatHandlers(api1, n, *gw)
 
 	http.Handle("/", r)
 
