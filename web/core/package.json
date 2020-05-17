@@ -12,7 +12,6 @@
     "build-watch": "tsc --watch"
   },
   "dependencies": {
-    "axios": "^0.19.2",
-    "class-transformer": "^0.2.3"
+    "axios": "^0.19.2"
   }
 }

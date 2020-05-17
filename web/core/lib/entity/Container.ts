@@ -1,25 +1,40 @@
 export class Container {
-    id: string
+  constructor(obj: any) {
+    this.id = obj.id;
+    this.cmd = obj.cmd;
+    this.entrypoint = obj.entrypoint;
+    this.created = new Date(obj.created);
+    this.name = obj.name;
+    this.state = obj.state;
+    this.status = obj.status;
+    this.image = obj.image;
+    this.ports = obj.ports;
+    this.labels = obj.labels;
+    this.volumes = obj.volumes;
+    this.networks = obj.networks;
+  }
 
-    cmd: string
+  id: string
 
-    entrypoint: string
+  cmd: string
 
-    created: Date
+  entrypoint: string
 
-    name: string
+  created: Date
 
-    state: string
+  name: string
 
-    status: string
+  state: string
 
-    image: string
+  status: string
 
-    ports: Array<string>
+  image: string
 
-    labels: Array<object>
+  ports: Array<string>
 
-    volumes: Array<string>
+  labels: Array<object>
 
-    networks: Array<string>
+  volumes: Array<string>
+
+  networks: Array<string>
 }
