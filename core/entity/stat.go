@@ -2,10 +2,10 @@ package entity
 
 import "fmt"
 
-type Bytes uint64
+type Byte uint64
 
 // @TODO: Move this to somewhere in the presentation layer
-func (t Bytes) String() string {
+func (t Byte) String() string {
 	if t < 1024 {
 		return fmt.Sprintf("%dB", t)
 	}
@@ -22,13 +22,13 @@ func (t Bytes) String() string {
 }
 
 type Stat struct {
-	ContainerID   ContainerID
-	CPUPercent    float64
-	MemoryPercent float64
-	MemoryUsage   Bytes
-	MemoryTotal   Bytes
-	NetworkInput  Bytes
-	NetworkOutput Bytes
-	BlockRead     Bytes
-	BlockWrite    Bytes
+	ContainerID   ContainerID `json:"containerId"`
+	CPUPercent    float64     `json:"cpuPercent"`
+	MemoryPercent float64     `json:"memoryPercent"`
+	MemoryUsage   Byte        `json:"memoryUsage"`
+	MemoryTotal   Byte        `json:"memoryTotal"`
+	NetworkInput  Byte        `json:"networkInput"`
+	NetworkOutput Byte        `json:"networkOutput"`
+	BlockRead     Byte        `json:"blockRead"`
+	BlockWrite    Byte        `json:"blockWrite"`
 }

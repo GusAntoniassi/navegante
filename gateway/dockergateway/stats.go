@@ -48,12 +48,12 @@ func hydrateStat(stat types.StatsJSON) entity.Stat {
 		ContainerID:   entity.ContainerID(stat.ID),
 		CPUPercent:    cpuPercent,
 		MemoryPercent: memPercent,
-		MemoryUsage:   entity.Bytes(memUsage),
-		MemoryTotal:   entity.Bytes(stat.MemoryStats.Limit),
-		NetworkInput:  entity.Bytes(netRx),
-		NetworkOutput: entity.Bytes(netTx),
-		BlockRead:     entity.Bytes(blkRead),
-		BlockWrite:    entity.Bytes(blkWrite),
+		MemoryUsage:   entity.Byte(memUsage),
+		MemoryTotal:   entity.Byte(stat.MemoryStats.Limit),
+		NetworkInput:  entity.Byte(netRx),
+		NetworkOutput: entity.Byte(netTx),
+		BlockRead:     entity.Byte(blkRead),
+		BlockWrite:    entity.Byte(blkWrite),
 	}
 
 	return entityStat
