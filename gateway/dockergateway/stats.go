@@ -22,10 +22,10 @@ func hydrateStat(stat types.StatsJSON) entity.Stat {
 
 	// @TODO: Check cgroup calc made in the docker stat command
 	// https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L239
-	memUsage := float64(stat.MemoryStats.Usage)
+	memUsage := stat.MemoryStats.Usage
 
 	if stat.MemoryStats.MaxUsage > 0 {
-		memPercent = memUsage / float64(stat.MemoryStats.Limit) * 100
+		memPercent = float64(memUsage) / float64(stat.MemoryStats.Limit) * 100
 	}
 
 	var netRx, netTx uint64
@@ -48,12 +48,12 @@ func hydrateStat(stat types.StatsJSON) entity.Stat {
 		ContainerID:   entity.ContainerID(stat.ID),
 		CPUPercent:    cpuPercent,
 		MemoryPercent: memPercent,
-		MemoryUsage:   entity.Byte(memUsage),
-		MemoryTotal:   entity.Byte(stat.MemoryStats.Limit),
-		NetworkInput:  entity.Byte(netRx),
-		NetworkOutput: entity.Byte(netTx),
-		BlockRead:     entity.Byte(blkRead),
-		BlockWrite:    entity.Byte(blkWrite),
+		MemoryUsage:   memUsage,
+		MemoryTotal:   stat.MemoryStats.Limit,
+		NetworkInput:  netRx,
+		NetworkOutput: netTx,
+		BlockRead:     blkRead,
+		BlockWrite:    blkWrite,
 	}
 
 	return entityStat

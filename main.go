@@ -36,9 +36,9 @@ func main() {
 			"ID: %s\n"+
 				"CPU%%: %.2f\n"+
 				"Mem%%: %.2f\n"+
-				"Mem usg/lim: %s/%s\n"+
-				"Net I/O: %s/%s\n"+
-				"Block I/O: %s/%s\n",
+				"Mem usg/lim: %d/%d\n"+
+				"Net I/O: %d/%d\n"+
+				"Block I/O: %d/%d\n",
 			v.ContainerID[:12],
 			v.CPUPercent,
 			v.MemoryPercent,
