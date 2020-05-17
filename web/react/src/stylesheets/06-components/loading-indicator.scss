@@ -1,0 +1,13 @@
+@import "../utility-imports";
+
+.loading-indicator {
+  font-size: 45px;
+  position: fixed;
+  z-index: 1;
+  right: 45px;
+  bottom: 30px;
+
+  > .spin {
+    animation-duration: 0.75s;
+  }
+}
