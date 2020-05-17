@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TiChevronLeft } from 'react-icons/ti';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { Container as EntityContainer } from 'core';
+import { ProgressBar } from 'components/ui/ProgressBar';
 
 import 'stylesheets/06-components/container-item.scss';
 
@@ -28,6 +29,7 @@ export const Container: React.FC<Props> = ({
     container
 }) => {
     if (container == null) return (null);
+    let stats = container.statistics;
 
     return (
         <div className="container-item">
@@ -67,11 +69,17 @@ export const Container: React.FC<Props> = ({
                 <li className="container-attribute -collapsed">
                     Stats <Chevron/>
                     <ul className="list">
-                        <li className="item">CPU%: 0.01%</li>
-                        <li className="item">Mem%: 0.15%</li>
-                        <li className="item">Mem usg: 11.7MiB / 7.6GiB</li>
-                        <li className="item">Net I/O: 12.9kB / 0B</li>
-                        <li className="item">Block I/O: 38.1MB / 0B</li>
+                        <li className="item display-flex">
+                            <span style={{ marginRight: "10px" }}>CPU:</span>
+                            <ProgressBar inline={true} progress={stats.cpuPercent}></ProgressBar>
+                        </li>
+                        <li className="item display-flex">
+                            <span style={{ marginRight: "10px" }}>Mem:</span>
+                            <ProgressBar inline={true} progress={stats.cpuPercent}></ProgressBar>
+                        </li>
+                        <li className="item">Mem usg: {stats.memoryUsage.toHuman()} / {stats.memoryTotal.toHuman()}</li>
+                        <li className="item">Net I/O: {stats.networkInput.toHuman()} / {stats.networkOutput.toHuman()}</li>
+                        <li className="item">Block I/O: {stats.blockRead.toHuman()} / {stats.blockWrite.toHuman()}</li>
                     </ul>
                 </li>
             </ul>

@@ -1,0 +1,35 @@
+@import "../utility-imports";
+
+.progress-bar {
+  position: relative;
+  background: lighter(map-get($theme, "background"), 30%);
+  overflow: hidden;
+  width: 100%;
+  height: 20px;
+  margin: 2px 0;
+
+  &.-inline {
+    width: 125px;
+    height: 16px;
+    padding: 2px;
+    display: inline-block;
+  }
+
+  > .progress {
+    height: 100%;
+    background: #0eb7ed;
+  }
+
+  > .label {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    transform: translateY(-50%);
+    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+    line-height: 100%;
+    font-weight: bold;
+    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.75);
+  }
+}

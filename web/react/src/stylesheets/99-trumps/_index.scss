@@ -2,6 +2,11 @@
   cursor: pointer;
 }
 
+.display-flex {
+  display: flex;
+  align-items: center;
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }

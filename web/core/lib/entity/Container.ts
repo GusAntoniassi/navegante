@@ -1,3 +1,5 @@
+import { Stat } from './Stat';
+
 export class Container {
   constructor(obj: any) {
     this.id = obj.id;
@@ -12,6 +14,7 @@ export class Container {
     this.labels = obj.labels;
     this.volumes = obj.volumes;
     this.networks = obj.networks;
+    this.statistics = new Stat(obj.statistics);
   }
 
   id: string
@@ -37,4 +40,6 @@ export class Container {
   volumes: Array<string>
 
   networks: Array<string>
+
+  statistics: Stat
 }

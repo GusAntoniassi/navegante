@@ -36,7 +36,10 @@ module.exports = {
         "tsx": "never"
       }
     ],
-    "no-plusplus": 'off'
+    "no-plusplus": "off",
+    "no-useless-constructor": "off",
+    "@typescript-eslint/no-useless-constructor": ["error"],
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
   },
   settings: {
     'import/parsers': {
