@@ -26,6 +26,7 @@ func MakeContainerHandlers(r *mux.Router, n *negroni.Negroni, gw containergatewa
 func getAllContainers(gw containergateway.Gateway) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gwContainers, err := gw.ContainerGetAll()
+		returnStats := r.FormValue("stats") == "true"
 
 		if err != nil {
 			log.Println("error calling gw.ContainerGetAll: ", err)
@@ -43,6 +44,11 @@ func getAllContainers(gw containergateway.Gateway) http.Handler {
 		containers := make([]apiEntity.Container, len(gwContainers))
 		for i, c := range gwContainers {
 			containers[i] = apiEntity.NewContainer(c)
+
+			if returnStats {
+				stats := getStats(gw, string(c.ID))
+				containers[i].Statistics = stats
+			}
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -61,6 +67,7 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
+		returnStats := r.FormValue("stats") == "true"
 
 		gwContainer, err := gw.ContainerGet(entity.ContainerID(id))
 
@@ -79,6 +86,11 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 
 		container := apiEntity.NewContainer(gwContainer)
 
+		if returnStats {
+			stats := getStats(gw, id)
+			container.Statistics = stats
+		}
+
 		w.WriteHeader(http.StatusOK)
 		err = json.NewEncoder(w).Encode(container)
 
@@ -89,4 +101,14 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 			return
 		}
 	})
+}
+
+func getStats(gw containergateway.Gateway, id string) *entity.Stat {
+	stats, err := gw.ContainerStats(id)
+	if err != nil {
+		log.Println("error calling gw.ContainerGetStats: ", err)
+		return nil
+	}
+
+	return stats
 }

@@ -15,11 +15,12 @@ type Container struct {
 	State      string             `json:"state"`
 	Status     string             `json:"status"`
 
-	Image    string            `json:"image"`
-	Ports    []string          `json:"ports"`
-	Labels   map[string]string `json:"labels"`
-	Volumes  []string          `json:"volumes"`
-	Networks []string          `json:"networks"`
+	Image      string            `json:"image"`
+	Ports      []string          `json:"ports"`
+	Labels     map[string]string `json:"labels"`
+	Volumes    []string          `json:"volumes"`
+	Networks   []string          `json:"networks"`
+	Statistics *entity.Stat      `json:"statistics"`
 }
 
 func NewContainer(c *entity.Container) Container {
