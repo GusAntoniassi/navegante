@@ -65,7 +65,7 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 		gwContainer, err := gw.ContainerGet(entity.ContainerID(id))
 
 		if err != nil {
-			log.Print("error calling gw.ContainerGetAll: ", err)
+			log.Println("error calling gw.ContainerGetAll: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(formatJSONError("Error getting the containers from the API"))
 			return
@@ -83,7 +83,7 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 		err = json.NewEncoder(w).Encode(container)
 
 		if err != nil {
-			log.Print("error converting container to JSON: ", err)
+			log.Println("error converting container to JSON: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(formatJSONError("Error converting container to JSON"))
 			return

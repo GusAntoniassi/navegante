@@ -59,7 +59,7 @@ func getContainerStats(gw containergateway.Gateway) http.Handler {
 		stats, err := gw.ContainerGet(entity.ContainerID(id))
 
 		if err != nil {
-			log.Print("error calling gw.ContainerGet: ", err)
+			log.Println("error calling gw.ContainerGet: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(formatJSONError("Error getting the stats from the API"))
 			return
@@ -75,7 +75,7 @@ func getContainerStats(gw containergateway.Gateway) http.Handler {
 		err = json.NewEncoder(w).Encode(stats)
 
 		if err != nil {
-			log.Print("error converting stats to JSON: ", err)
+			log.Println("error converting stats to JSON: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(formatJSONError("Error converting stats to JSON"))
 			return
