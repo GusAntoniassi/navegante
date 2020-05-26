@@ -1,0 +1,15 @@
+select {
+  padding: 5px;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: map-get($theme, "background");
+  color: map-get($theme, "text");
+  border-color: lighter(map-get($theme, "background"), 30%);
+}
+
+hr {
+  margin: 15px 0;
+  border: 1px solid lighter(map-get($theme, "background"), 15%);
+  border-top: none;
+}
