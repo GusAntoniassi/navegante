@@ -110,12 +110,12 @@ func getMemUsage(memStat types.MemoryStats) uint64 {
  * Extracts current container memory usage percentage, with a check to avoid
  * division by zero
  */
-func getMemPercent(usage uint64, limit uint64) float64 {
-	if limit == 0 {
+func getMemPercent(usage uint64, memLimit uint64) float64 {
+	if memLimit == 0 {
 		return 0
 	}
 
-	return float64(usage) / float64(limit) * 100
+	return float64(usage) / float64(memLimit) * 100
 }
 
 func (g *Gateway) ContainerStatsAll() ([]*entity.Stat, error) {
