@@ -7,26 +7,21 @@ import (
 	"github.com/gusantoniassi/navegante/core/entity"
 )
 
-// @TODO: This is a very basic implementation, probably needs some work on the
-// calculations. Need to understand more the docker stat source code and also
-// take a look at how cadvisor calculates these values and compare the results
 // @TODO: test stats on Windows: https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L98
+// I couldn't find the OSType in the response for Stats API, but I guess I could look this API up first:
+// https://docs.docker.com/engine/api/v1.24/#display-system-wide-information
+
+/**
+ * Receives a Docker StatsJSON object and returns stats in a more human-friendly
+ * format
+ */
 func hydrateStat(stat types.StatsJSON) entity.Stat {
 	var cpuPercent, memPercent float64
 
-	if stat.CPUStats.SystemUsage > 0 {
-		// @TODO: Check delta calc made in the docker stat command
-		// https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L166
-		cpuPercent = float64(stat.CPUStats.CPUUsage.TotalUsage) / float64(stat.CPUStats.SystemUsage) * 100
-	}
+	cpuPercent = getAverageCpuUsage(stat)
 
-	// @TODO: Check cgroup calc made in the docker stat command
-	// https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L239
-	memUsage := stat.MemoryStats.Usage
-
-	if stat.MemoryStats.MaxUsage > 0 {
-		memPercent = float64(memUsage) / float64(stat.MemoryStats.Limit) * 100
-	}
+	memUsage := getMemUsage(stat.MemoryStats)
+	memPercent = getMemPercent(memUsage, stat.MemoryStats.Limit)
 
 	var netRx, netTx uint64
 	for _, iface := range stat.Networks {
@@ -57,6 +52,70 @@ func hydrateStat(stat types.StatsJSON) entity.Stat {
 	}
 
 	return entityStat
+}
+
+/*
+ * Calculates the average CPU usage based on the previous reading and the overall
+ * system usage.
+ * @see https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L166
+ * @see https://stackoverflow.com/questions/35692667/in-docker-cpu-usage-calculation-what-are-totalusage-systemusage-percpuusage-a
+ */
+func getAverageCpuUsage(stat types.StatsJSON) float64 {
+	previousContainerCpu := stat.PreCPUStats.CPUUsage.TotalUsage
+	previousSystemCpu := stat.PreCPUStats.SystemUsage
+	cpuPercent := 0.0
+
+	// Container CPU usage changed from last reading
+	containerCpuDelta := float64(stat.CPUStats.CPUUsage.TotalUsage) - float64(previousContainerCpu)
+	// System CPU usage changed from last reading
+	systemCpuDelta := float64(stat.CPUStats.SystemUsage) - float64(previousSystemCpu)
+	// Number of system cores allocated to the container
+	containerCPUCores := float64(stat.CPUStats.OnlineCPUs)
+
+	// If the onlineCPU metric isn't present, use the number of PercpuUsage statistics returned
+	if containerCPUCores == 0.0 {
+		containerCPUCores = float64(len(stat.CPUStats.CPUUsage.PercpuUsage))
+	}
+
+	// If the system and the container CPU usage hasn't changed, we don't need to calc
+	if systemCpuDelta > 0.0 && containerCpuDelta > 0.0 {
+		// Calculate the average container CPU usage based on the total system usage
+		averageCpuUsage := containerCpuDelta / systemCpuDelta
+		// Multiply by containerCPUCores to consider the number of cores
+		cpuPercent = averageCpuUsage * containerCPUCores * 100.0
+	}
+
+	return cpuPercent
+}
+
+/**
+ * Extracts current container memory usage from MemoryStats type
+ * @see https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L239
+ */
+func getMemUsage(memStat types.MemoryStats) uint64 {
+	// Version 1 of the Linux cgroup API uses total_inactive_file
+	if v, ok := memStat.Stats["total_inactive_file"]; ok && v < memStat.Usage {
+		return memStat.Usage - v
+	}
+
+	// Version 2 of the Linux cgroup API uses inactive_file
+	if v := memStat.Stats["inactive_file"]; v < memStat.Usage {
+		return memStat.Usage - v
+	}
+
+	return memStat.Usage
+}
+
+/**
+ * Extracts current container memory usage percentage, with a check to avoid
+ * division by zero
+ */
+func getMemPercent(usage uint64, limit uint64) float64 {
+	if limit == 0 {
+		return 0
+	}
+
+	return float64(usage) / float64(limit) * 100
 }
 
 func (g *Gateway) ContainerStatsAll() ([]*entity.Stat, error) {
