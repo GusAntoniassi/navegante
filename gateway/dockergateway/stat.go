@@ -7,9 +7,13 @@ import (
 	"github.com/gusantoniassi/navegante/core/entity"
 )
 
+type getStatResult struct {
+	stat *entity.Stat
+	err  error
+}
+
 // @TODO: test stats on Windows: https://github.com/docker/cli/blob/96e1d1d6421b725bdd5024f9a97af9bf97ad9619/cli/command/container/stats_helpers.go#L98
-// I couldn't find the OSType in the response for Stats API, but I guess I could look this API up first:
-// https://docs.docker.com/engine/api/v1.24/#display-system-wide-information
+// OSType is in types.ContainerStats, along with the JSON response body
 
 /**
  * Receives a Docker StatsJSON object and returns stats in a more human-friendly
@@ -118,6 +122,28 @@ func getMemPercent(usage uint64, memLimit uint64) float64 {
 	return float64(usage) / float64(memLimit) * 100
 }
 
+func getContainerStats(g *Gateway, id string, c chan getStatResult) {
+	defer close(c)
+	stat, err := g.ContainerStats(id)
+	c <- getStatResult{stat: stat, err: err}
+}
+
+func getAllContainerStats(g *Gateway, containers []types.Container, c chan getStatResult) {
+	defer close(c)
+	var results []chan getStatResult
+
+	for i, c := range containers {
+		results = append(results, make(chan getStatResult))
+		go getContainerStats(g, c.ID[:12], results[i])
+	}
+
+	for i := range results {
+		for r1 := range results[i] {
+			c <- r1
+		}
+	}
+}
+
 func (g *Gateway) ContainerStatsAll() ([]*entity.Stat, error) {
 	ctx := context.Background()
 
@@ -130,16 +156,17 @@ func (g *Gateway) ContainerStatsAll() ([]*entity.Stat, error) {
 		return nil, nil
 	}
 
+	results := make(chan getStatResult, len(containers))
+	go getAllContainerStats(g, containers, results)
+
 	containerStats := make([]*entity.Stat, 0, len(containers))
 
-	for _, c := range containers {
-		stat, err := g.ContainerStats(c.ID[:12])
-
-		if err != nil {
+	for r := range results {
+		if r.err != nil {
 			return nil, err
 		}
 
-		containerStats = append(containerStats, stat)
+		containerStats = append(containerStats, r.stat)
 	}
 
 	return containerStats, nil
