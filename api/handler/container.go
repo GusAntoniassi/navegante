@@ -3,14 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	apiEntity "github.com/gusantoniassi/navegante/api/entity"
 	"github.com/gusantoniassi/navegante/core/entity"
 	"github.com/gusantoniassi/navegante/gateway/containergateway"
+	"log"
+	"net/http"
 )
 
 func MakeContainerHandlers(r *mux.Router, n *negroni.Negroni, gw containergateway.Gateway) {
@@ -42,12 +41,23 @@ func getAllContainers(gw containergateway.Gateway) http.Handler {
 		}
 
 		containers := make([]apiEntity.Container, len(gwContainers))
+		statResults := make([]chan *entity.Stat, len(gwContainers))
+
 		for i, c := range gwContainers {
 			containers[i] = apiEntity.NewContainer(c)
 
 			if returnStats {
-				stats := getStats(gw, string(c.ID))
-				containers[i].Statistics = stats
+				ch := make(chan *entity.Stat)
+				statResults[i] = ch
+				go getStats(gw, string(c.ID), ch)
+			}
+		}
+
+		if returnStats {
+			for i := range statResults {
+				for stats := range statResults[i] {
+					containers[i].Statistics = stats
+				}
 			}
 		}
 
@@ -87,7 +97,7 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 		container := apiEntity.NewContainer(gwContainer)
 
 		if returnStats {
-			stats := getStats(gw, id)
+			stats := getStatsSync(gw, id)
 			container.Statistics = stats
 		}
 
@@ -103,12 +113,19 @@ func getContainer(gw containergateway.Gateway) http.Handler {
 	})
 }
 
-func getStats(gw containergateway.Gateway, id string) *entity.Stat {
+func getStatsSync(gw containergateway.Gateway, id string) *entity.Stat {
 	stats, err := gw.ContainerStats(id)
+
 	if err != nil {
 		log.Println("error calling gw.ContainerGetStats: ", err)
 		return nil
 	}
 
 	return stats
+}
+
+func getStats(gw containergateway.Gateway, id string, c chan *entity.Stat) {
+	defer close(c)
+	stats := getStatsSync(gw, id)
+	c <- stats
 }

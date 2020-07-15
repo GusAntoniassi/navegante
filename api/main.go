@@ -47,8 +47,8 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", PORT),
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  handler.REQUEST_TIMEOUT * time.Second,
+		WriteTimeout: handler.REQUEST_TIMEOUT * time.Second,
 		ErrorLog:     logger,
 		Handler:      http.DefaultServeMux,
 	}
