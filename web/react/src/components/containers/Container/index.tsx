@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { TiChevronLeft } from 'react-icons/ti';
-import { AiOutlineSearch } from 'react-icons/ai';
-import { Container as EntityContainer } from 'core';
-import { ProgressBar } from 'components/ui/ProgressBar';
+import {TiChevronLeft} from 'react-icons/ti';
+import {AiOutlineSearch} from 'react-icons/ai';
+import {Container as EntityContainer} from 'core';
+import {ProgressBar} from 'components/ui/ProgressBar';
 
 import 'stylesheets/06-components/container-item.scss';
 
@@ -26,8 +26,8 @@ const Chevron: React.FC = () => {
 };
 
 export const Container: React.FC<Props> = ({
-    container
-}) => {
+                                               container
+                                           }) => {
     if (container == null) return (null);
     let stats = container.statistics;
 
@@ -70,15 +70,16 @@ export const Container: React.FC<Props> = ({
                     Stats <Chevron/>
                     <ul className="list">
                         <li className="item display-flex">
-                            <span style={{ marginRight: "10px" }}>CPU:</span>
+                            <span style={{marginRight: "10px"}}>CPU:</span>
                             <ProgressBar inline={true} progress={stats.cpuPercent}></ProgressBar>
                         </li>
                         <li className="item display-flex">
-                            <span style={{ marginRight: "10px" }}>Mem:</span>
-                            <ProgressBar inline={true} progress={stats.cpuPercent}></ProgressBar>
+                            <span style={{marginRight: "10px"}}>Mem:</span>
+                            <ProgressBar inline={true} progress={stats.memoryPercent}></ProgressBar>
                         </li>
                         <li className="item">Mem usg: {stats.memoryUsage.toHuman()} / {stats.memoryTotal.toHuman()}</li>
-                        <li className="item">Net I/O: {stats.networkInput.toHuman()} / {stats.networkOutput.toHuman()}</li>
+                        <li className="item">Net
+                            I/O: {stats.networkInput.toHuman()} / {stats.networkOutput.toHuman()}</li>
                         <li className="item">Block I/O: {stats.blockRead.toHuman()} / {stats.blockWrite.toHuman()}</li>
                     </ul>
                 </li>
