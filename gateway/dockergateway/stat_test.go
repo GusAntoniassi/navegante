@@ -79,7 +79,29 @@ func getMockContainerStatsLinux() types.ContainerStats {
     "failcnt": 0,
     "limit": 67108864
   },
-  "blkio_stats": {},
+  "blkio_stats": {
+    "io_service_bytes_recursive": [
+      {
+        "major": 8,
+        "minor": 16,
+        "op": "Read",
+        "value": 1048576
+      },
+      {
+        "major": 8,
+        "minor": 16,
+        "op": "Write",
+        "value": 1024
+      }
+    ],
+    "io_serviced_recursive": [],
+    "io_queue_recursive": [],
+    "io_service_time_recursive": [],
+    "io_wait_time_recursive": [],
+    "io_merged_recursive": [],
+    "io_time_recursive": [],
+    "sectors_recursive": []
+  },
   "cpu_stats": {
     "cpu_usage": {
       "percpu_usage": [
