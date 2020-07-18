@@ -2,6 +2,7 @@ package dockergateway
 
 import (
 	"context"
+	"fmt"
 	"github.com/gojuno/minimock/v3"
 	"github.com/gusantoniassi/navegante/core/entity"
 	"io/ioutil"
@@ -166,6 +167,18 @@ func TestGateway_ContainerStats(t *testing.T) {
 	assert.Nilf(t, err, "ContainerStats returns no error")
 	assert.NotEmptyf(t, stats, "Should return stats")
 	assert.Equal(t, stats.ContainerID, entity.ContainerID("0123abcd456e"), "Container ID should be equal to 0123abcd456e")
+}
+
+func TestGateway_ContainerStatsWithError(t *testing.T) {
+	mc := minimock.NewController(t)
+	dockerMock := NewCommonAPIClientMock(mc).ContainerStatsMock.Set(func(context.Context, string, bool) (types.ContainerStats, error) {
+		return types.ContainerStats{}, fmt.Errorf("docker error")
+	})
+
+	gw := NewGateway(dockerMock)
+	_, err := gw.ContainerStats("abc123")
+
+	assert.NotNilf(t, err, "ContainerStats should return an error")
 }
 
 func TestGateway_ContainerStatsAllLinux(t *testing.T) {
