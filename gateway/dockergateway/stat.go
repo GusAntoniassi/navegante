@@ -23,25 +23,10 @@ func hydrateStat(stat types.StatsJSON) entity.Stat {
 	var cpuPercent, memPercent float64
 
 	cpuPercent = getAverageCpuUsage(stat)
-
 	memUsage := getMemUsage(stat.MemoryStats)
 	memPercent = getMemPercent(memUsage, stat.MemoryStats.Limit)
-
-	var netRx, netTx uint64
-	for _, iface := range stat.Networks {
-		netRx += iface.RxBytes
-		netTx += iface.TxBytes
-	}
-
-	var blkRead, blkWrite uint64
-	for _, svcBytes := range stat.BlkioStats.IoServiceBytesRecursive {
-		switch svcBytes.Op {
-		case "Read":
-			blkRead += svcBytes.Value
-		case "Write":
-			blkWrite += svcBytes.Value
-		}
-	}
+	netRx, netTx := getNetworkBytes(stat.Networks)
+	blkRead, blkWrite := getDiskBytes(stat.BlkioStats.IoServiceBytesRecursive)
 
 	entityStat := entity.Stat{
 		ContainerID:   entity.ContainerID(stat.ID),
@@ -120,6 +105,31 @@ func getMemPercent(usage uint64, memLimit uint64) float64 {
 	}
 
 	return float64(usage) / float64(memLimit) * 100
+}
+
+func getNetworkBytes(netStats map[string]types.NetworkStats) (uint64, uint64) {
+	var netRx, netTx uint64
+
+	for _, iface := range netStats {
+		netRx += iface.RxBytes
+		netTx += iface.TxBytes
+	}
+
+	return netRx, netTx
+}
+
+func getDiskBytes(blockStats []types.BlkioStatEntry) (uint64, uint64) {
+	var blkRead, blkWrite uint64
+	for _, svcBytes := range blockStats {
+		switch svcBytes.Op {
+		case "Read":
+			blkRead += svcBytes.Value
+		case "Write":
+			blkWrite += svcBytes.Value
+		}
+	}
+
+	return blkRead, blkWrite
 }
 
 func getContainerStats(g *Gateway, id string, c chan getStatResult) {
