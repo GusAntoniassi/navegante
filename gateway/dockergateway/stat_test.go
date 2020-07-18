@@ -150,8 +150,41 @@ func TestGateway_ContainerStatsAllLinux(t *testing.T) {
 	// @TODO
 }
 
-func TestGateway_hydrateStatsLinux(t *testing.T) {
-	// @TODO
+func TestGateway_getNetworkBytes(t *testing.T) {
+	mockNetworkStats := map[string]types.NetworkStats{
+		"eth0": {
+			RxBytes: 1024,
+			TxBytes: 2048,
+		},
+		"eth5": {
+			RxBytes: 1024,
+			TxBytes: 2048,
+		},
+		"eth999": {
+			RxBytes: 1024,
+			TxBytes: 2048,
+		},
+	}
+
+	expectedRx, expectedTx := getNetworkBytes(mockNetworkStats)
+
+	assert.Equal(t, expectedRx, uint64(1024+1024+1024), "getNetworkBytes should sum the RxBytes from all the network interfaces")
+	assert.Equal(t, expectedTx, uint64(2048+2048+2048), "getNetworkBytes should sum the TxBytes from all the network interfaces")
+}
+
+func TestGateway_getDiskBytes(t *testing.T) {
+	mockDiskStats := []types.BlkioStatEntry{
+		// From my tests containerd will return only one of each Op, but I'll test the sum to be safe
+		{Major: 8, Minor: 16, Op: "Read", Value: 1024},
+		{Major: 8, Minor: 16, Op: "Read", Value: 1024},
+		{Major: 8, Minor: 16, Op: "Write", Value: 2048},
+		{Major: 8, Minor: 16, Op: "Write", Value: 2048},
+	}
+
+	expectedRead, expectedWrite := getDiskBytes(mockDiskStats)
+
+	assert.Equal(t, expectedRead, uint64(1024+1024), "getDiskBytes should sum all the Read operations")
+	assert.Equal(t, expectedWrite, uint64(2048+2048), "getDiskBytes should sum all the Write operations")
 }
 
 func getMockMemoryStats() types.MemoryStats {
