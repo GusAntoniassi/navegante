@@ -15,7 +15,7 @@ import (
 func getMockContainerStatsLinux() types.ContainerStats {
 	responseBody := `
 {
-  "id": "abc123",
+  "id": "0123abcd456e",
   "read": "2015-01-08T22:57:31.547920715Z",
   "pids_stats": {
     "current": 3
@@ -165,7 +165,7 @@ func TestGateway_ContainerStats(t *testing.T) {
 
 	assert.Nilf(t, err, "ContainerStats returns no error")
 	assert.NotEmptyf(t, stats, "Should return stats")
-	assert.Equal(t, stats.ContainerID, entity.ContainerID("abc123"), "Container ID should be equal to abc123")
+	assert.Equal(t, stats.ContainerID, entity.ContainerID("0123abcd456e"), "Container ID should be equal to 0123abcd456e")
 }
 
 func TestGateway_ContainerStatsAllLinux(t *testing.T) {
