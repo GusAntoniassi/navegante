@@ -182,7 +182,31 @@ func TestGateway_ContainerStatsWithError(t *testing.T) {
 }
 
 func TestGateway_ContainerStatsAllLinux(t *testing.T) {
-	// @TODO
+	mc := minimock.NewController(t)
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(context.Context, types.ContainerListOptions) ([]types.Container, error) {
+		return getMockContainers(), nil
+	}).ContainerStatsMock.Set(func(context.Context, string, bool) (types.ContainerStats, error) {
+		return getMockContainerStatsLinux(), nil
+	})
+
+	gw := NewGateway(dockerMock)
+	stats, err := gw.ContainerStatsAll()
+
+	assert.Nilf(t, err, "ContainerStatsAll returns no error")
+	assert.NotEmptyf(t, stats, "Should return stats")
+	assert.Equal(t, stats[0].ContainerID, entity.ContainerID("0123abcd456e"), "Container ID should be equal to 0123abcd456e")
+}
+
+func TestGateway_ContainerStatsAllWithError(t *testing.T) {
+	mc := minimock.NewController(t)
+	dockerMock := NewCommonAPIClientMock(mc).ContainerListMock.Set(func(context.Context, types.ContainerListOptions) ([]types.Container, error) {
+		return nil, fmt.Errorf("docker error")
+	})
+
+	gw := NewGateway(dockerMock)
+	_, err := gw.ContainerStatsAll()
+
+	assert.NotNilf(t, err, "ContainerStatsAll should return an error")
 }
 
 func TestGateway_getNetworkBytes(t *testing.T) {
