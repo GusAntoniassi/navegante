@@ -18,6 +18,7 @@ func NewInMemRepository() *InMemoryRepo {
 }
 
 func (r *InMemoryRepo) Create(user *User) (ID, error) {
+	user.ID = ID(len(r.users) + 1)
 	r.users[user.ID] = user
 	return user.ID, nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gusantoniassi/navegante/core/entity/user"
 	"log"
 	"net/http"
 	"os"
@@ -36,6 +37,10 @@ func main() {
 	api1 := r.PathPrefix("/v1").Subrouter()
 	handler.MakeContainerHandlers(api1, n, *gw)
 	handler.MakeStatHandlers(api1, n, *gw)
+
+	userRepo := user.NewInMemRepository()
+	userManager := user.NewManager(userRepo)
+	handler.MakeUserHandlers(api1, n, userManager)
 
 	http.Handle("/", r)
 

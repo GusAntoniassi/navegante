@@ -17,11 +17,22 @@ func NewManager(r repository) *manager {
 
 func (mgr *manager) Create(user *User) (ID, error) {
 	user.CreatedAt = time.Now()
+	hashedPassword, err := Hash(user.Password)
+
+	if err != nil {
+		return 0, err
+	}
+
+	user.Password = hashedPassword
 	return mgr.repo.Create(user)
 }
 
 func (mgr *manager) Get(id ID) (*User, error) {
 	return mgr.repo.Get(id)
+}
+
+func (mgr *manager) List() ([]*User, error) {
+	return mgr.repo.List()
 }
 
 func (mgr *manager) Search(query string) ([]*User, error) {
