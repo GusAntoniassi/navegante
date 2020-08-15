@@ -24,6 +24,10 @@ func MakeUserHandlers(r *mux.Router, n *negroni.Negroni, mgr user.Manager) {
 	r.Handle("/users", n.With(
 		negroni.Wrap(addUser(mgr)),
 	)).Methods("POST")
+
+	r.Handle("/users/{id}", n.With(
+		negroni.Wrap(deleteUser(mgr)),
+	)).Methods("DELETE")
 }
 
 func getAllUsers(mgr user.Manager) http.Handler {
@@ -120,5 +124,32 @@ func addUser(mgr user.Manager) http.Handler {
 
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("{\"id\": \"%s\"}", strconv.FormatUint(uint64(id), 10))))
+	})
+}
+
+func deleteUser(mgr user.Manager) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		idParam := vars["id"]
+		id, err := strconv.ParseUint(idParam, 10, 64)
+
+		if err != nil {
+			log.Println("error converting id param (", idParam, ") to uint64: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(formatJSONError("Invalid user ID received"))
+			return
+		}
+
+		err = mgr.Delete(user.ID(id))
+
+		// @TODO: Implement special case for user not found error
+		if err != nil {
+			log.Println("error calling mgr.Delete: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error deleting user from the database"))
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
