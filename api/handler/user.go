@@ -26,6 +26,10 @@ func MakeUserHandlers(r *mux.Router, n *negroni.Negroni, mgr user.Manager) {
 	)).Methods("POST")
 
 	r.Handle("/users/{id}", n.With(
+		negroni.Wrap(editUser(mgr)),
+	)).Methods("PUT")
+
+	r.Handle("/users/{id}", n.With(
 		negroni.Wrap(deleteUser(mgr)),
 	)).Methods("DELETE")
 }
@@ -124,6 +128,44 @@ func addUser(mgr user.Manager) http.Handler {
 
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("{\"id\": \"%s\"}", strconv.FormatUint(uint64(id), 10))))
+	})
+}
+
+func editUser(mgr user.Manager) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		idParam := vars["id"]
+		id, err := strconv.ParseUint(idParam, 10, 64)
+
+		if err != nil {
+			log.Println("error converting id param (", idParam, ") to uint64: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(formatJSONError("Invalid user ID received"))
+			return
+		}
+
+		var usr user.User
+
+		err = json.NewDecoder(r.Body).Decode(&usr)
+
+		if err != nil {
+			log.Println("error decoding user JSON: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(formatJSONError("Error decoding user, please check the request body and try again"))
+			return
+		}
+
+		usr.ID = user.ID(id)
+		err = mgr.Update(&usr)
+
+		if err != nil {
+			log.Println("error updating user: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(formatJSONError("Error editing user"))
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
 

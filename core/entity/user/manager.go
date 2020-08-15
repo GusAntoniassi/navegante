@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -45,5 +46,15 @@ func (mgr *manager) Delete(id ID) error {
 
 func (mgr *manager) Update(user *User) error {
 	user.UpdatedAt = time.Now()
+
+	oldUser, err := mgr.Get(user.ID)
+	if err != nil {
+		return fmt.Errorf("error getting the previous user configuration: %s", err)
+	}
+
+	// disallow updating e-mail
+	user.Email = oldUser.Email
+	user.CreatedAt = oldUser.CreatedAt
+
 	return mgr.repo.Update(user)
 }
